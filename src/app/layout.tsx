@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { QueryProvider } from "@/providers";
+import { inter, josefinSans } from "./fonts";
 import "@/styles/globals.css";
 
 export const metadata: Metadata = {
@@ -14,7 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
+      <body className={`${inter.variable} ${josefinSans.variable} font-primary`}>
         <QueryProvider>{children}</QueryProvider>
       </body>
     </html>
