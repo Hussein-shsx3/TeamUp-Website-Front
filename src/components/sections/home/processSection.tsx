@@ -9,7 +9,7 @@ const ProcessSection = () => {
       <Container>
         {/* ── Section Header ── */}
         <div className="text-center mb-16 md:mb-20" data-aos="fade-up">
-          <Heading level="h3" className="font-medium text-white mb-3">
+          <Heading level="h4" className="font-medium text-white mb-3">
             How It Works
           </Heading>
           <p className="font-primary text-white/70 text-sm md:text-base">
