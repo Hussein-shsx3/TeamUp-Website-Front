@@ -1,43 +1,12 @@
 import Image from "next/image";
 import { Container } from "@/components/layout";
 import { Heading } from "@/components/ui/typography";
-
-const STEPS = [
-  {
-    number: "01",
-    title: "Create Your Profile",
-    description:
-      "Sign up and build your academic profile. Highlight your skills, interests, and GPA to let others know what you bring to the table.",
-    showLine: true,
-  },
-  {
-    number: "02",
-    title: "Discover Opportunities",
-    description:
-      "Browse through innovative project ideas or search for existing teams looking for members with your specific skillset.",
-    showLine: true,
-  },
-  {
-    number: "03",
-    title: "Form or Join a Team",
-    description:
-      "Send join requests to teams you like, or create your own project and invite peers and a supervisor to start the collaboration.",
-    showLine: true,
-  },
-  {
-    number: "04",
-    title: "Manage & Deliver",
-    description:
-      "Use our integrated dashboard to track tasks, schedule Zoom meetings, and communicate with your mentor until graduation day.",
-    showLine: false,
-  },
-];
+import { STEPS } from "@/mock";
 
 const ProcessSection = () => {
   return (
     <section id="process" className="bg-primary py-20 md:py-28 overflow-hidden">
       <Container>
-
         {/* ── Section Header ── */}
         <div className="text-center mb-16 md:mb-20" data-aos="fade-up">
           <Heading level="h3" className="font-medium text-white mb-3">
@@ -59,10 +28,11 @@ const ProcessSection = () => {
             >
               {/* Circle + line row */}
               <div className="relative w-full flex items-center justify-center">
-
                 {/* Number circle */}
-                <div className="relative z-10 w-20 h-20 rounded-full border-2 bg-white
-                  flex items-center justify-center flex-shrink-0">
+                <div
+                  className="relative z-10 w-20 h-20 rounded-full border-2 bg-white
+                  flex items-center justify-center flex-shrink-0"
+                >
                   <span className="font-bold text-primary text-3xl tracking-wider">
                     {step.number}
                   </span>
@@ -83,23 +53,20 @@ const ProcessSection = () => {
                     />
                   </div>
                 )}
-
               </div>
 
               {/* Step text */}
               <div className="flex flex-col gap-2 px-2">
-                <h3 className="font-secondary font-bold text-white text-base">
-                  {step.title} 
+                <h3 className="font-medium text-white text-base">
+                  {step.title}
                 </h3>
                 <p className="font-primary text-white/70 text-xs leading-relaxed">
                   {step.description}
                 </p>
               </div>
-
             </div>
           ))}
         </div>
-
       </Container>
     </section>
   );
