@@ -44,6 +44,7 @@ const config: Config = {
           DEFAULT: "#2563EB",
           dark: "#1E40AF",
           light: "#DBEAFE",
+          lightbg: "#3B82F6",
         },
         accent: {
           DEFAULT: "#34D399",
@@ -65,7 +66,7 @@ const config: Config = {
         // Desktop
         h1: ["3.5rem", { lineHeight: "1.2" }],
         h2: ["2.5rem", { lineHeight: "1.25" }],
-        h3: ["2rem", { lineHeight: "1.3" }],
+        h3: ["1.8rem", { lineHeight: "1.3" }],
         h4: ["1.5rem", { lineHeight: "1.35" }],
         h5: ["1.25rem", { lineHeight: "1.4" }],
         h6: ["1rem", { lineHeight: "1.5" }],

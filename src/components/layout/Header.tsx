@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Menu, X, Sparkles } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Container } from "@/components/layout";
 import Image from "next/image";
 
@@ -185,7 +185,7 @@ const Header = () => {
             {/* ── Desktop Auth Buttons ── */}
             <div className="hidden md:flex items-center gap-2.5 flex-shrink-0">
               <Link
-                href="/sign-in"
+                href="/auth?mode=signin"
                 className="px-5 py-2 text-sm font-medium font-primary
                   text-primary border border-primary/30 rounded-lg
                   hover:border-primary hover:bg-primary-light
@@ -194,18 +194,14 @@ const Header = () => {
                 Sign In
               </Link>
               <Link
-                href="/sign-up"
-                className="relative px-5 py-2 text-sm font-medium font-primary
-                  text-white bg-primary rounded-lg overflow-hidden
+                href="/auth?mode=signup"
+                className="inline-flex items-center justify-center h-9 px-5 text-sm font-medium font-primary border border-primary/30
+                  text-white bg-primary rounded-lg
                   hover:bg-primary-dark transition-all duration-200
                   shadow-[0_2px_12px_rgba(37,99,235,0.35)]
-                  hover:shadow-[0_4px_18px_rgba(37,99,235,0.45)]
-                  hover:-translate-y-px"
+                  hover:shadow-[0_4px_18px_rgba(37,99,235,0.45)]"
               >
-                <span className="relative z-10 flex items-center gap-1.5">
-                  <Sparkles size={13} aria-hidden="true" />
-                  Sign Up
-                </span>
+                <span className="relative z-10">Sign Up</span>
               </Link>
             </div>
 
@@ -345,7 +341,7 @@ const Header = () => {
                   ${isRendered ? "opacity-100 translate-y-0 delay-[320ms]" : "opacity-0 translate-y-3"}`}
               >
                 <Link
-                  href="/sign-in"
+                  href="/auth?mode=signin"
                   onClick={closeMenu}
                   className="w-full text-center py-3 text-sm font-semibold font-primary
                     text-primary border border-primary/30 rounded-lg
@@ -355,16 +351,14 @@ const Header = () => {
                   Sign In
                 </Link>
                 <Link
-                  href="/sign-up"
+                  href="/auth?mode=signup"
                   onClick={closeMenu}
                   className="w-full text-center py-3 text-sm font-semibold font-primary
                     text-white bg-primary rounded-lg
                     shadow-[0_2px_12px_rgba(37,99,235,0.35)]
-                    hover:bg-primary-dark transition-all duration-200
-                    flex items-center justify-center gap-2"
+                    hover:bg-primary-dark transition-all duration-200"
                 >
-                  <Sparkles size={14} aria-hidden="true" />
-                  Sign Up Free
+                  Sign Up
                 </Link>
               </div>
 

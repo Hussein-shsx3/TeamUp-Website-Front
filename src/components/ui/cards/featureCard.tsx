@@ -28,7 +28,7 @@ const FeatureCard = ({
     >
       {/* Floating icon badge */}
       <div
-        className={`relative z-10 flex items-center justify-center rounded-full  border-[4px] border-sbackground
+        className={`relative z-10 flex items-center justify-center rounded-full  border-[4px] border-white
           mb-[-22px] ${iconBg} w-14 h-14`}
       >
         <div className={`relative w-6 h-6`}>

@@ -13,7 +13,7 @@ const FeaturesSection = () => {
       <Container>
         {/* Section header */}
         <div className="text-center mb-10 md:mb-10" data-aos="fade-up">
-          <Heading level="h3" className="text-content mb-3">
+          <Heading level="h3" className="text-content font-medium mb-3">
             Our Features
           </Heading>
           <p className="font-primary text-content-light text-base max-w-xs mx-auto leading-relaxed">
