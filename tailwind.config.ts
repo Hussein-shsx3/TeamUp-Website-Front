@@ -22,7 +22,7 @@ const config: Config = {
         md: "768px",
         lg: "1024px",
         xl: "1280px",
-        "2xl": "1280px",
+        "2xl": "1290px",
       },
     },
     extend: {
@@ -61,6 +61,12 @@ const config: Config = {
           DEFAULT: "#FFFFFF",
           dark: "#1D3557",
         },
+        // Added palette from design
+        success: { DEFAULT: "#07BD74" },
+        info: { DEFAULT: "#246BFD" },
+        warning: { DEFAULT: "#FACC15" },
+        error: { DEFAULT: "#F75555" },
+        disabled: { DEFAULT: "#D8D8D8" },
       },
       fontSize: {
         // Desktop
@@ -86,13 +92,19 @@ const config: Config = {
   // come from variables (e.g. props.bg) they can be purged unless we list
   // them here. Add any color/bg/spacing utilities you expect to use.
   safelist: [
-    // background colours used in FEATURE cards
+    // background colors used in FEATURE cards
     "bg-primary",
     "bg-primary-dark",
     "bg-primary-light",
     "bg-accent",
     "bg-accent-dark",
     "bg-accent-light",
+    // design palette
+    "bg-success",
+    "bg-info",
+    "bg-warning",
+    "bg-error",
+    "bg-disabled",
     // icon backgrounds
     "bg-primary",
     "bg-accent-dark",

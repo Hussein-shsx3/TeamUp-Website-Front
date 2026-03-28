@@ -60,40 +60,48 @@ body::-webkit-scrollbar {
 
 /* ── Auth side decorative motion ─────────────────── */
 @keyframes auth-float {
+
   0%,
   100% {
     transform: translate3d(0, 0, 0);
   }
+
   50% {
     transform: translate3d(0, -18px, 0);
   }
 }
 
 @keyframes auth-float-reverse {
+
   0%,
   100% {
     transform: translate3d(0, 0, 0);
   }
+
   50% {
     transform: translate3d(0, 16px, 0);
   }
 }
 
 @keyframes auth-float-diamond {
+
   0%,
   100% {
     transform: rotate(45deg) translate3d(0, 0, 0);
   }
+
   50% {
     transform: rotate(45deg) translate3d(4px, -16px, 0);
   }
 }
 
 @keyframes auth-float-rect {
+
   0%,
   100% {
     transform: rotate(12deg) translate3d(0, 0, 0);
   }
+
   50% {
     transform: rotate(12deg) translate3d(-4px, -14px, 0);
   }
@@ -133,4 +141,22 @@ body::-webkit-scrollbar {
   animation: auth-float-rect 4.5s ease-in-out infinite;
   animation-delay: -1s;
   will-change: transform;
+}
+
+/* ── Modal animation ── */
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-modal-in {
+  animation: modal-in 0.22s ease-out forwards;
 }

@@ -10,6 +10,8 @@ interface ModalProps {
   className?: string;
   showCloseButton?: boolean;
   closeOnBackdrop?: boolean;
+  /** Override default close control styles (e.g. neutral icon instead of red). */
+  closeButtonClassName?: string;
 }
 
 const Modal = ({
@@ -19,6 +21,7 @@ const Modal = ({
   className = "",
   showCloseButton = true,
   closeOnBackdrop = true,
+  closeButtonClassName = "",
 }: ModalProps) => {
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -68,11 +71,14 @@ const Modal = ({
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="absolute top-4 right-4 w-7 h-7 flex items-center justify-center
-              rounded-full text-red-400 hover:bg-red-50
-              transition-colors duration-200"
+            className={`absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full
+              transition-colors duration-200
+              ${
+                closeButtonClassName ||
+                "text-content-muted hover:bg-gray-100 hover:text-content"
+              }`}
           >
-            <X size={16} aria-hidden="true" />
+            <X size={18} aria-hidden="true" />
           </button>
         )}
         {children}

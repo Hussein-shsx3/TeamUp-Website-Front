@@ -99,7 +99,7 @@ const Auth = () => {
         }`}
       >
         <Link href="/" aria-label="TeamUp home" className="mb-9">
-          <div className="relative w-[90px] h-6 ml-4">
+          <div className="relative w-[75px] h-6 ml-4">
             <Image
               src="/images/logo.png"
               alt="TeamUp"
