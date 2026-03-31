@@ -138,7 +138,6 @@ const DashboardHeader = () => {
                 src="/images/Teamup.svg"
                 alt="TeamUp"
                 fill
-                quality={100}
                 unoptimized
                 className="object-contain"
               />
