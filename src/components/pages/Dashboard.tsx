@@ -2,8 +2,13 @@ import { MOCK_USER } from "@/mock/Dashboard";
 import { Heading } from "@/components/ui/typography";
 import { Breadcrumb } from "@/components/ui/navigation";
 import { MainSection } from "@/components/sections/dashboard";
+import { MentorDashboardView } from "@/components/sections/dashboard/mentor";
 
 const Dashboard = () => {
+  if (MOCK_USER.userRole === "mentor") {
+    return <MentorDashboardView />;
+  }
+
   return (
     <div>
       <Breadcrumb

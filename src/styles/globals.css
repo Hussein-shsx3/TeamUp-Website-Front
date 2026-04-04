@@ -10,25 +10,39 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  -ms-overflow-style: auto;
+  scrollbar-width: auto;
 }
 
 html {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  -ms-overflow-style: auto;
+  scrollbar-width: auto;
+  scrollbar-gutter: stable;
 }
 
 html::-webkit-scrollbar {
-  display: none;
-  width: 0;
-  height: 0;
+  display: block;
+  width: 10px;
+  height: 10px;
 }
 
 body::-webkit-scrollbar {
-  display: none;
-  width: 0;
-  height: 0;
+  display: block;
+  width: 10px;
+  height: 10px;
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
 }
 
 /* Hide internal auth form scrollbar while preserving wheel/touchpad scrolling */

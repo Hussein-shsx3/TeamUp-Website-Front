@@ -30,3 +30,5 @@ export { default as ProjectSubmissionSuccessModal } from "./ProjectSubmissionSuc
 export type { ProjectSubmissionSuccessModalProps } from "./ProjectSubmissionSuccessModal";
 export { default as ProjectIdeaCheckoutModal } from "./ProjectIdeaCheckoutModal";
 export type { ProjectIdeaCheckoutModalProps } from "./ProjectIdeaCheckoutModal";
+export * from "./MentorSupervisionRequestsModal";
+export * from "./ProjectProposalDetailsModal";

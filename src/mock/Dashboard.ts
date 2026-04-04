@@ -4,10 +4,10 @@ export type UserRole = "student" | "graduate" | "team_admin" | "mentor";
 
 export const MOCK_USER = {
   name: "Wafaa Amjad",
-  role: "UI/UX Designer",
-  userRole: "team_admin" as UserRole,
-  avatar: "/images/Group 2.png",
-  skills: ["UI design", "Ux design", "web design", "mobile design"],
+  role: "Mentor",
+  userRole: "mentor" as UserRole,
+  avatar: "/images/user.jpg",
+  skills: ["Fundraising", "System Design", "Full-stack Dev", "Business Scaling"],
   hasTeam: false,
   profileCompletion: 80,
   university: "AlAzhar",
@@ -20,7 +20,7 @@ export const MOCK_STUDENT_PROFILE = {
   id: 42,
   name: "Wafaa Amjad",
   displayRole: "Student",
-  avatar: "/images/Group 2.png",
+  avatar: "/images/user.jpg",
   skills: ["UI design", "Ux design", "web design", "mobile design"],
   university: "AlAzhar",
   major: "Software Engineering",
@@ -33,12 +33,179 @@ export const MOCK_PROJECT = {
   status: "In Progress" as const,
   completion: 70,
   teamMembers: [
-    { id: 1, name: "Alice", avatar: "/images/Group 2.png" },
-    { id: 2, name: "Bob", avatar: "/images/Group 2.png" },
-    { id: 3, name: "Carol", avatar: "/images/Group 2.png" },
+    { id: 1, name: "Alice", avatar: "/images/user.jpg" },
+    { id: 2, name: "Bob", avatar: "/images/user.jpg" },
+    { id: 3, name: "Carol", avatar: "/images/user.jpg" },
   ],
   extraMembers: 2,
 };
+
+export interface MockMentorProjectMember {
+  id: number;
+  name: string;
+  avatar: string;
+}
+
+export interface MockMentorSupervisedProject {
+  id: number;
+  name: string;
+  supervisor: string;
+  status: "In Progress" | "Completed" | "Pending Review";
+  completion: number;
+  image: string;
+  members: MockMentorProjectMember[];
+  extraMembers: number;
+  workspaceHref: string;
+}
+
+export interface MockMentorIdeaCard {
+  id: number;
+  title: string;
+  description: string;
+  badgeLabel: string;
+  viewHref: string;
+  editHref: string;
+}
+
+export interface MockSupervisionRequest {
+  id: number;
+  teamName: string;
+  projectTitle: string;
+  previewText: string;
+  description: string;
+  teamMembers: string[];
+  techStack: string[];
+}
+
+export const MOCK_MENTOR_SUPERVISED_PROJECTS: MockMentorSupervisedProject[] = [
+  {
+    id: 1,
+    name: "Smart Campus Platform",
+    supervisor: "Dr. Sara Ahmed",
+    status: "In Progress",
+    completion: 72,
+    image: "/images/Team.jpg",
+    members: [
+      { id: 1, name: "Ali", avatar: "/images/user.jpg" },
+      { id: 2, name: "Mona", avatar: "/images/user.jpg" },
+      { id: 3, name: "Youssef", avatar: "/images/user.jpg" },
+    ],
+    extraMembers: 2,
+    workspaceHref: "/dashboard/workspace",
+  },
+  {
+    id: 2,
+    name: "Health Tracker AI",
+    supervisor: "Dr. Omar Nabil",
+    status: "Completed",
+    completion: 100,
+    image: "/images/Team.jpg",
+    members: [
+      { id: 1, name: "Nour", avatar: "/images/user.jpg" },
+      { id: 2, name: "Tarek", avatar: "/images/user.jpg" },
+      { id: 3, name: "Laila", avatar: "/images/user.jpg" },
+    ],
+    extraMembers: 1,
+    workspaceHref: "/dashboard/workspace",
+  },
+];
+
+export const MOCK_MENTOR_POSTED_IDEAS: MockMentorIdeaCard[] = [
+  {
+    id: 1,
+    title: "Project Name",
+    description:
+      "This graduation project explores innovative solutions in [Industry Name], focusing on solving real-world challenges through research and practical implementation.",
+    badgeLabel: "Free",
+    viewHref: "/dashboard/projects-ideas/1",
+    editHref: "/dashboard/projects-ideas",
+  },
+  {
+    id: 2,
+    title: "Project Name",
+    description:
+      "This graduation project explores innovative solutions in [Industry Name], focusing on solving real-world challenges through research and practical implementation.",
+    badgeLabel: "Paid for 5$",
+    viewHref: "/dashboard/projects-ideas/2",
+    editHref: "/dashboard/projects-ideas",
+  },
+  {
+    id: 3,
+    title: "Project Name",
+    description:
+      "This graduation project explores innovative solutions in [Industry Name], focusing on solving real-world challenges through research and practical implementation.",
+    badgeLabel: "Free",
+    viewHref: "/dashboard/projects-ideas/3",
+    editHref: "/dashboard/projects-ideas",
+  },
+];
+
+export const MOCK_SUPERVISION_REQUESTS: MockSupervisionRequest[] = [
+  {
+    id: 1,
+    teamName: "Innovators",
+    projectTitle: "Smart Campus Energy System",
+    previewText:
+      'A team "Innovators" has sent you a request to mentor their graduation project.',
+    description:
+      "This project aims to develop an AI-powered platform that optimizes energy consumption within university buildings. By using IoT sensors and machine learning algorithms, the system will predict peak usage times and automatically adjust lighting and cooling systems to reduce waste by 30%.",
+    teamMembers: ["Wafaa Amjad", "Wafaa Amjad", "Wafaa Amjad", "Wafaa Amjad", "Wafaa Amjad"],
+    techStack: [
+      "Machine Learning (Python)",
+      "Data Visualization",
+      "Firebase Integration",
+      "IoT Development",
+    ],
+  },
+  {
+    id: 2,
+    teamName: "Innovators",
+    projectTitle: "Smart Campus Energy System",
+    previewText:
+      'A team "Innovators" has sent you a request to mentor their graduation project.',
+    description:
+      "This project aims to develop an AI-powered platform that optimizes energy consumption within university buildings. By using IoT sensors and machine learning algorithms, the system will predict peak usage times and automatically adjust lighting and cooling systems to reduce waste by 30%.",
+    teamMembers: ["Wafaa Amjad", "Wafaa Amjad", "Wafaa Amjad", "Wafaa Amjad", "Wafaa Amjad"],
+    techStack: [
+      "Machine Learning (Python)",
+      "Data Visualization",
+      "Firebase Integration",
+      "IoT Development",
+    ],
+  },
+  {
+    id: 3,
+    teamName: "Innovators",
+    projectTitle: "Smart Campus Energy System",
+    previewText:
+      'A team "Innovators" has sent you a request to mentor their graduation project.',
+    description:
+      "This project aims to develop an AI-powered platform that optimizes energy consumption within university buildings. By using IoT sensors and machine learning algorithms, the system will predict peak usage times and automatically adjust lighting and cooling systems to reduce waste by 30%.",
+    teamMembers: ["Wafaa Amjad", "Wafaa Amjad", "Wafaa Amjad", "Wafaa Amjad", "Wafaa Amjad"],
+    techStack: [
+      "Machine Learning (Python)",
+      "Data Visualization",
+      "Firebase Integration",
+      "IoT Development",
+    ],
+  },
+  {
+    id: 4,
+    teamName: "Innovators",
+    projectTitle: "Smart Campus Energy System",
+    previewText:
+      'A team "Innovators" has sent you a request to mentor their graduation project.',
+    description:
+      "This project aims to develop an AI-powered platform that optimizes energy consumption within university buildings. By using IoT sensors and machine learning algorithms, the system will predict peak usage times and automatically adjust lighting and cooling systems to reduce waste by 30%.",
+    teamMembers: ["Wafaa Amjad", "Wafaa Amjad", "Wafaa Amjad", "Wafaa Amjad", "Wafaa Amjad"],
+    techStack: [
+      "Machine Learning (Python)",
+      "Data Visualization",
+      "Firebase Integration",
+      "IoT Development",
+    ],
+  },
+];
 
 export const MOCK_MILESTONES = [
   {
@@ -254,7 +421,7 @@ export const MOCK_RECOMMENDED_PROJECTS: MockRecommendedProject[] = [
     description:
       "This graduation project explores innovative solutions in [Industry Name], focusing on solving real-world challenges through research and practical implementation.",
     tags: ["Ui design", "Ui design"],
-    image: "/images/Group 2.png",
+    image: "/images/user.jpg",
   },
   {
     id: 2,
@@ -262,7 +429,7 @@ export const MOCK_RECOMMENDED_PROJECTS: MockRecommendedProject[] = [
     description:
       "This graduation project explores innovative solutions in [Industry Name], focusing on solving real-world challenges through research and practical implementation.",
     tags: ["Ui design", "Ui design"],
-    image: "/images/Group 2.png",
+    image: "/images/user.jpg",
   },
   {
     id: 3,
@@ -270,7 +437,7 @@ export const MOCK_RECOMMENDED_PROJECTS: MockRecommendedProject[] = [
     description:
       "This graduation project explores innovative solutions in [Industry Name], focusing on solving real-world challenges through research and practical implementation.",
     tags: ["Ui design", "Ui design"],
-    image: "/images/Group 2.png",
+    image: "/images/user.jpg",
   },
 ];
 

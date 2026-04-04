@@ -21,3 +21,4 @@ export {
   ProjectSubmissionForm,
 } from "./project-settings";
 export { TeamWorkspaceView } from "./workspace";
+export { MentorDashboardView } from "./mentor";

@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { User, Activity, Settings, LogOut } from "lucide-react";
+import { User, ClipboardList, Settings, LogOut } from "lucide-react";
 import { MOCK_USER } from "@/mock/Dashboard";
 
 interface ProfileDropdownProps {
@@ -13,6 +13,8 @@ interface ProfileDropdownProps {
   anchorRef: React.RefObject<HTMLElement | null>;
   /** Opens the logout confirmation modal (handled by parent, e.g. DashboardHeader). */
   onLogoutRequest?: () => void;
+  isMentor?: boolean;
+  onSupervisionRequestsRequest?: () => void;
 }
 
 const ProfileDropdown = ({
@@ -20,6 +22,8 @@ const ProfileDropdown = ({
   onClose,
   anchorRef,
   onLogoutRequest,
+  isMentor = false,
+  onSupervisionRequestsRequest,
 }: ProfileDropdownProps) => {
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -95,16 +99,32 @@ const ProfileDropdown = ({
           <span>{MOCK_USER.name}</span>
         </Link>
 
-        <Link
-          href="/dashboard/activity"
-          onClick={onClose}
-          className="flex items-center gap-3 px-4 py-2.5 font-primary text-sm
-            text-content hover:bg-primary-light hover:text-primary
-            transition-colors duration-150"
-        >
-          <Activity size={16} aria-hidden="true" className="flex-shrink-0" />
-          <span>My Activity</span>
-        </Link>
+        {isMentor ? (
+          <button
+            type="button"
+            onClick={() => {
+              onClose();
+              onSupervisionRequestsRequest?.();
+            }}
+            className="flex w-full items-center gap-3 px-4 py-2.5 font-primary text-sm
+              text-content hover:bg-primary-light hover:text-primary
+              transition-colors duration-150"
+          >
+            <ClipboardList size={16} aria-hidden="true" className="flex-shrink-0" />
+            <span>Supervision requests</span>
+          </button>
+        ) : (
+          <Link
+            href="/dashboard/activity"
+            onClick={onClose}
+            className="flex items-center gap-3 px-4 py-2.5 font-primary text-sm
+              text-content hover:bg-primary-light hover:text-primary
+              transition-colors duration-150"
+          >
+            <ClipboardList size={16} aria-hidden="true" className="flex-shrink-0" />
+            <span>My Activity</span>
+          </Link>
+        )}
 
         <Link
           href="/dashboard/settings"

@@ -11,7 +11,7 @@ import {
   X,
   Menu,
   User,
-  Activity,
+  ClipboardList,
   Settings,
   LogOut,
 } from "lucide-react";
@@ -19,9 +19,19 @@ import {
   ProfileDropdown,
   NotificationsDropdown,
 } from "@/components/ui/overlays";
-import { CalendarModal, LogoutModal } from "@/components/ui/modals";
+import {
+  CalendarModal,
+  LogoutModal,
+  MentorSupervisionRequestsModal,
+  ProjectProposalDetailsModal,
+} from "@/components/ui/modals";
 import { Container } from "@/components/layout";
-import { MOCK_USER, DASHBOARD_NAV_LINKS } from "@/mock/Dashboard";
+import {
+  MOCK_USER,
+  DASHBOARD_NAV_LINKS,
+  MOCK_SUPERVISION_REQUESTS,
+  type MockSupervisionRequest,
+} from "@/mock/Dashboard";
 
 const DashboardHeader = () => {
   const pathname = usePathname();
@@ -41,6 +51,12 @@ const DashboardHeader = () => {
 
   /* ── calendar modal ── */
   const [calendarOpen, setCalendarOpen] = useState(false);
+
+  /* ── mentor supervision flow ── */
+  const isMentor = MOCK_USER.userRole === "mentor";
+  const [supervisionRequestsOpen, setSupervisionRequestsOpen] = useState(false);
+  const [proposalDetailsOpen, setProposalDetailsOpen] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState<MockSupervisionRequest | null>(null);
 
   /* ── mobile drawer ── */
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -117,6 +133,23 @@ const DashboardHeader = () => {
   const closeSearch = () => {
     setSearchOpen(false);
     setSearchQuery("");
+  };
+
+  const openSupervisionRequests = () => {
+    setSupervisionRequestsOpen(true);
+    setProposalDetailsOpen(false);
+  };
+
+  const openProposalDetails = (request: MockSupervisionRequest) => {
+    setSelectedRequest(request);
+    setSupervisionRequestsOpen(false);
+    setProposalDetailsOpen(true);
+  };
+
+  const closeMentorModals = () => {
+    setSupervisionRequestsOpen(false);
+    setProposalDetailsOpen(false);
+    setSelectedRequest(null);
   };
 
   return (
@@ -305,6 +338,8 @@ const DashboardHeader = () => {
                 onClose={() => setProfileOpen(false)}
                 anchorRef={profileBtnRef}
                 onLogoutRequest={() => setLogoutModalOpen(true)}
+                isMentor={isMentor}
+                onSupervisionRequestsRequest={openSupervisionRequests}
               />
             </div>
 
@@ -461,21 +496,38 @@ const DashboardHeader = () => {
                       <span className="ml-[2px]">{MOCK_USER.name}</span>
                     </Link>
 
-                    <Link
-                      href="/dashboard/activity"
-                      onClick={closeMenu}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium
-                        transition-all duration-300
-                        ${isRendered ? "opacity-100 translate-x-0 delay-[255ms]" : "opacity-0 -translate-x-5"}
-                        text-content hover:text-primary hover:bg-primary-light/60`}
-                    >
-                      <Activity
-                        size={16}
-                        aria-hidden="true"
-                        className="flex-shrink-0 ml-[2px]"
-                      />
-                      <span className="ml-[2px]">My Activity</span>
-                    </Link>
+                    {isMentor ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          closeMenu();
+                          openSupervisionRequests();
+                        }}
+                        className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-medium
+                          transition-all duration-300
+                          ${isRendered ? "opacity-100 translate-x-0 delay-[255ms]" : "opacity-0 -translate-x-5"}
+                          text-content hover:bg-primary-light/60 hover:text-primary`}
+                      >
+                          <ClipboardList size={16} aria-hidden="true" className="ml-[2px] flex-shrink-0" />
+                        <span className="ml-[2px]">Supervision requests</span>
+                      </button>
+                    ) : (
+                      <Link
+                        href="/dashboard/activity"
+                        onClick={closeMenu}
+                        className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium
+                          transition-all duration-300
+                          ${isRendered ? "opacity-100 translate-x-0 delay-[255ms]" : "opacity-0 -translate-x-5"}
+                          text-content hover:text-primary hover:bg-primary-light/60`}
+                      >
+                        <Settings
+                          size={16}
+                          aria-hidden="true"
+                          className="flex-shrink-0 ml-[2px] opacity-0"
+                        />
+                        <span className="ml-[2px]">My Activity</span>
+                      </Link>
+                    )}
 
                     <Link
                       href="/dashboard/settings"
@@ -591,6 +643,32 @@ const DashboardHeader = () => {
         onClose={() => setLogoutModalOpen(false)}
         onConfirm={() => {
           console.log("logout (mock)");
+        }}
+      />
+
+      <MentorSupervisionRequestsModal
+        open={supervisionRequestsOpen}
+        requests={MOCK_SUPERVISION_REQUESTS}
+        onClose={closeMentorModals}
+        onReviewRequest={openProposalDetails}
+        onAcceptRequest={(request) => {
+          console.log("accept supervision request (mock)", request.id);
+        }}
+        onRejectRequest={(request) => {
+          console.log("reject supervision request (mock)", request.id);
+        }}
+      />
+
+      <ProjectProposalDetailsModal
+        open={proposalDetailsOpen}
+        request={selectedRequest}
+        onClose={closeMentorModals}
+        onBack={openSupervisionRequests}
+        onAccept={(request) => {
+          console.log("accept proposal (mock)", request.id);
+        }}
+        onReject={(request) => {
+          console.log("reject proposal (mock)", request.id);
         }}
       />
     </>
