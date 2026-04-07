@@ -70,9 +70,9 @@ const TagInput = ({
         </label>
       ) : null}
       <div className={shell}>
-        {value.map((tag) => (
+        {value.map((tag, index) => (
           <span
-            key={tag}
+            key={`${tag}-${index}`}
             className="inline-flex max-w-full items-center gap-1 rounded-md bg-primary-light
               py-1 pl-2.5 pr-1 font-primary text-xs font-medium text-primary"
           >

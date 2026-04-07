@@ -3,13 +3,18 @@ import { Breadcrumb } from "@/components/ui/navigation";
 import { EditProfileForm, SettingsShell } from "@/components/sections/dashboard";
 
 const SettingsProfilePage = () => {
+  const isMentor = MOCK_USER.userRole === "mentor";
+
   return (
     <div>
       <Breadcrumb
         items={[
-          { label: "Main Student Dashboard", href: "/dashboard" },
+          {
+            label: isMentor ? "Main Mentor Dashboard" : "Main Student Dashboard",
+            href: "/dashboard",
+          },
           { label: "Settings", href: "/dashboard/settings/profile" },
-          { label: "Student Profile" },
+          { label: "Mentor Profile" },
         ]}
       />
       <SettingsShell>
@@ -24,6 +29,7 @@ const SettingsProfilePage = () => {
             initialAvatar={MOCK_USER.avatar}
             actionsAlign="start"
             cancelHref="/dashboard/profile"
+            isMentor={isMentor}
           />
         </div>
       </SettingsShell>

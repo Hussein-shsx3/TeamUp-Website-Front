@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Bookmark } from "lucide-react";
 import { LinkButton } from "@/components/ui/buttons";
 import type { ProjectIdea } from "@/mock/ProjectsIdeas";
+import { Heading } from "@/components/ui/typography";
 
 interface ProjectIdeaCardProps {
   idea: ProjectIdea;
@@ -30,9 +31,9 @@ const ProjectIdeaCard = ({ idea }: ProjectIdeaCardProps) => {
     >
       {/* ── Row 1: title + badges + bookmark ── */}
       <div className="flex items-start justify-between gap-2">
-        <h3 className="font-primary text-base font-semibold leading-tight text-content">
+        <Heading level="h3" className="font-primary text-base font-semibold leading-tight text-content-light">
           {name}
-        </h3>
+        </Heading>
 
         <div className="flex shrink-0 items-center gap-2">
           {/* Price amount chip — only for paid */}

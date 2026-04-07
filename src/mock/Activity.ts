@@ -24,6 +24,8 @@ export interface MockSavedActivityItem {
   kind: "paid" | "free";
   /** Small badge next to price */
   statusBadge: "Paid" | "Free";
+  /** Whether this item already grants access to the project folder */
+  isPurchased?: boolean;
 }
 
 export const MOCK_SAVED_ACTIVITY_ITEMS: MockSavedActivityItem[] = [
@@ -35,6 +37,7 @@ export const MOCK_SAVED_ACTIVITY_ITEMS: MockSavedActivityItem[] = [
     priceLabel: "5$",
     kind: "paid",
     statusBadge: "Paid",
+    isPurchased: true,
   },
   {
     id: 2,
@@ -44,6 +47,7 @@ export const MOCK_SAVED_ACTIVITY_ITEMS: MockSavedActivityItem[] = [
     priceLabel: "Free",
     kind: "free",
     statusBadge: "Free",
+    isPurchased: true,
   },
   {
     id: 3,
@@ -53,6 +57,7 @@ export const MOCK_SAVED_ACTIVITY_ITEMS: MockSavedActivityItem[] = [
     priceLabel: "5$",
     kind: "paid",
     statusBadge: "Paid",
+    isPurchased: true,
   },
   {
     id: 4,
@@ -62,6 +67,7 @@ export const MOCK_SAVED_ACTIVITY_ITEMS: MockSavedActivityItem[] = [
     priceLabel: "Free",
     kind: "free",
     statusBadge: "Free",
+    isPurchased: true,
   },
   {
     id: 5,
@@ -71,6 +77,7 @@ export const MOCK_SAVED_ACTIVITY_ITEMS: MockSavedActivityItem[] = [
     priceLabel: "5$",
     kind: "paid",
     statusBadge: "Paid",
+    isPurchased: true,
   },
   {
     id: 6,
@@ -80,6 +87,7 @@ export const MOCK_SAVED_ACTIVITY_ITEMS: MockSavedActivityItem[] = [
     priceLabel: "Free",
     kind: "free",
     statusBadge: "Free",
+    isPurchased: true,
   },
 ];
 
@@ -88,6 +96,7 @@ export interface MockPurchasedActivityItem {
   title: string;
   description: string;
   postedBy: string;
+  isPurchased?: boolean;
 }
 
 export const MOCK_PURCHASED_ACTIVITY_ITEMS: MockPurchasedActivityItem[] =
@@ -96,4 +105,5 @@ export const MOCK_PURCHASED_ACTIVITY_ITEMS: MockPurchasedActivityItem[] =
     title,
     description,
     postedBy,
+    isPurchased: true,
   }));

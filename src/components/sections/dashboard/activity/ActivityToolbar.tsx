@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, Filter, Search } from "lucide-react";
+import { Filter, Search } from "lucide-react";
 
 const ActivityToolbar = () => {
   const [query, setQuery] = useState("");
@@ -45,18 +45,13 @@ const ActivityToolbar = () => {
           <select
             aria-label="Sort by"
             defaultValue="newest"
-            className="w-full appearance-none rounded-xl border border-primary bg-white py-2.5 pl-3 pr-9
+            className="w-full appearance-none rounded-xl border border-primary bg-white py-2.5 pl-3
               font-primary text-sm font-medium text-primary focus:outline-none focus:ring-2
               focus:ring-primary/20"
           >
             <option value="newest">Newest</option>
             <option value="oldest">Oldest</option>
           </select>
-          <ChevronDown
-            size={16}
-            className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-primary"
-            aria-hidden="true"
-          />
         </div>
       </div>
     </div>

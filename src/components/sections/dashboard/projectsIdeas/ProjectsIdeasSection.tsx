@@ -1,5 +1,6 @@
 "use client";
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
+import Link from "next/link";
 import { Search, Filter, ChevronDown, ArrowUpDown, X } from "lucide-react";
 import { Button } from "@/components/ui/buttons";
 import { Heading } from "@/components/ui/typography";
@@ -108,7 +109,7 @@ const ProjectsIdeasSection = () => {
       {/* ── Page Header ── */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <Heading level="h3" className="font-bold text-content">
+          <Heading level="h3" className="font-semibold text-content-light">
             Explore Projects ideas
           </Heading>
           <p className="mt-1 font-primary text-sm text-content-light">
@@ -116,16 +117,13 @@ const ProjectsIdeasSection = () => {
           </p>
         </div>
 
-        {/* Add New Idea — disabled placeholder matching the design */}
-        <Button
-          type="button"
-          variant="primary"
-          size="md"
-          disabled
-          className="shrink-0 self-start md:px-8"
+        {/* Add New Idea */}
+        <Link
+          href="/dashboard/projects-ideas/post-new-idea"
+          className="shrink-0 self-start rounded-lg bg-primary px-8 py-2.5 font-primary text-sm font-semibold text-white transition-all hover:bg-primary-dark"
         >
           Add New Idea
-        </Button>
+        </Link>
       </div>
 
       {/* ── Toolbar ── */}

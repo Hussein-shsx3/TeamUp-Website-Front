@@ -7,6 +7,7 @@ interface ProfileHeaderProps {
   displayRole: string;
   avatar: string;
   isOwnProfile: boolean;
+  nonOwnActionLabel?: string;
 }
 
 const ProfileHeader = ({
@@ -14,9 +15,10 @@ const ProfileHeader = ({
   displayRole,
   avatar,
   isOwnProfile,
+  nonOwnActionLabel,
 }: ProfileHeaderProps) => {
   return (
-    <div className="flex flex-col items-center gap-4 px-4 pb-6 pt-4 sm:gap-5 sm:px-6 sm:pb-8 sm:pt-6 md:pt-8">
+    <div className="flex flex-col items-center gap-4 pb-6 sm:gap-5 sm:pb-8">
       {/* Actions — full-width row so nothing overlaps avatar on narrow screens */}
       <div className="flex w-full min-w-0 flex-wrap items-center justify-end gap-2">
         {isOwnProfile ? (
@@ -48,7 +50,7 @@ const ProfileHeader = ({
             className="max-sm:w-full gap-2 justify-center shadow-[0_2px_8px_rgba(37,99,235,0.3)]"
           >
             <Send size={14} aria-hidden="true" />
-            Invitation
+            {nonOwnActionLabel ?? "Invitation"}
           </Button>
         )}
       </div>

@@ -5,7 +5,7 @@ import {
   DashboardSidebarNav,
   DeleteAccountButton,
 } from "@/components/ui/navigation";
-import { SETTINGS_NAV_LINKS } from "@/mock/Dashboard";
+import { SETTINGS_NAV_LINKS, MOCK_USER } from "@/mock/Dashboard";
 
 const navIcon = {
   profile: User,
@@ -13,14 +13,16 @@ const navIcon = {
   notifications: Bell,
 } as const;
 
-const items = SETTINGS_NAV_LINKS.map((link) => ({
-  id: link.id,
-  href: link.href,
-  label: link.label,
-  icon: navIcon[link.id],
-}));
-
 const SettingsSidebar = () => {
+  const isMentor = MOCK_USER.userRole === "mentor";
+  
+  const items = SETTINGS_NAV_LINKS(isMentor).map((link) => ({
+    id: link.id,
+    href: link.href,
+    label: link.id === "profile" ? MOCK_USER.name : link.label,
+    icon: navIcon[link.id],
+  }));
+
   return (
     <DashboardSidebarNav
       aria-label="Settings sections"

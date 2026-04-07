@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ChevronDown, X } from "lucide-react";
+import { X } from "lucide-react";
 import { Input, PasswordInput } from "@/components/ui/forms";
 import { Heading } from "@/components/ui/typography";
 import {
@@ -223,10 +223,6 @@ const SignUpForm = ({ onSwitchToSignIn }: SignUpFormProps) => {
                   </option>
                 ))}
               </select>
-              <ChevronDown
-                size={16}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-content-muted pointer-events-none"
-              />
             </div>
           </div>
 
@@ -257,10 +253,6 @@ const SignUpForm = ({ onSwitchToSignIn }: SignUpFormProps) => {
                   </option>
                 ))}
               </select>
-              <ChevronDown
-                size={16}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-content-muted pointer-events-none"
-              />
             </div>
           </div>
 

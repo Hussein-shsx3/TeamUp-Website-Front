@@ -8,12 +8,17 @@ export const metadata: Metadata = {
 import { EditProfileForm } from "@/components/sections/dashboard";
 
 const ProfileEditPage = () => {
+  const isMentor = MOCK_USER.userRole === "mentor";
+
   return (
     <div>
       <Breadcrumb
         items={[
-          { label: "Main Student Dashboard", href: "/dashboard" },
-          { label: "Student Profile" },
+          {
+            label: isMentor ? "Main Mentor Dashboard" : "Main Student Dashboard",
+            href: "/dashboard",
+          },
+          { label: isMentor ? "Mentor Profile" : "Student Profile" },
         ]}
       />
       <div
@@ -31,6 +36,7 @@ const ProfileEditPage = () => {
             initialAvatar={MOCK_USER.avatar}
             actionsAlign="start"
             cancelHref="/dashboard/profile"
+            isMentor={isMentor}
           />
         </div>
       </div>

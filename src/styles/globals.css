@@ -45,6 +45,10 @@ body::-webkit-scrollbar-thumb {
   background-clip: content-box;
 }
 
+select::-ms-expand {
+  display: none;
+}
+
 /* Hide internal auth form scrollbar while preserving wheel/touchpad scrolling */
 .auth-scroll-area {
   -ms-overflow-style: none;

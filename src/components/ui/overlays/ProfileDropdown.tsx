@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { User, ClipboardList, Settings, LogOut } from "lucide-react";
+import { User, ClipboardList, Settings, LogOut, MessageSquareWarning } from "lucide-react";
 import { MOCK_USER } from "@/mock/Dashboard";
 
 interface ProfileDropdownProps {
@@ -13,6 +13,7 @@ interface ProfileDropdownProps {
   anchorRef: React.RefObject<HTMLElement | null>;
   /** Opens the logout confirmation modal (handled by parent, e.g. DashboardHeader). */
   onLogoutRequest?: () => void;
+  onReportIssueRequest?: () => void;
   isMentor?: boolean;
   onSupervisionRequestsRequest?: () => void;
 }
@@ -22,6 +23,7 @@ const ProfileDropdown = ({
   onClose,
   anchorRef,
   onLogoutRequest,
+  onReportIssueRequest,
   isMentor = false,
   onSupervisionRequestsRequest,
 }: ProfileDropdownProps) => {
@@ -136,6 +138,20 @@ const ProfileDropdown = ({
           <Settings size={16} aria-hidden="true" className="flex-shrink-0" />
           <span>Settings</span>
         </Link>
+
+        <button
+          type="button"
+          onClick={() => {
+            onClose();
+            onReportIssueRequest?.();
+          }}
+          className="flex w-full items-center gap-3 px-4 py-2.5 font-primary text-sm
+            text-content hover:bg-primary-light hover:text-primary
+            transition-colors duration-150"
+        >
+          <MessageSquareWarning size={16} aria-hidden="true" className="flex-shrink-0" />
+          <span>Report an Issue</span>
+        </button>
 
         <div className="border-t border-gray-100 mt-1 pt-1">
           <button

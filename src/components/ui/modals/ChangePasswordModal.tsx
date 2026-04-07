@@ -39,17 +39,17 @@ const ChangePasswordModal = ({ isOpen, onClose }: ChangePasswordModalProps) => {
       isOpen={isOpen}
       onClose={onClose}
       closeButtonClassName="text-content-muted hover:bg-gray-100 hover:text-content"
-      className="max-w-md w-full p-6 pt-12 sm:p-8 sm:pt-12"
+      className="max-w-xl w-full p-6 pt-12 sm:p-8 sm:pt-14"
     >
       <form onSubmit={handleSubmit} className="flex flex-col" noValidate>
         <Heading
           level="h3"
-          className="mb-6 pr-8 font-primary font-bold text-content !text-xl !leading-tight md:!text-2xl"
+          className="mb-8 pr-8 font-primary font-bold text-content !text-2xl !leading-tight"
         >
           Change Password
         </Heading>
 
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-6">
           <PasswordInput
             id="change-password-current"
             name="currentPassword"
@@ -83,7 +83,7 @@ const ChangePasswordModal = ({ isOpen, onClose }: ChangePasswordModalProps) => {
           type="submit"
           variant="primary"
           size="md"
-          className="mt-8 w-full"
+          className="mt-10 w-full py-4 text-lg"
         >
           Update Password
         </Button>

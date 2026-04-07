@@ -5,9 +5,10 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Bookmark, Clock3, Download, FileLock, FileText } from "lucide-react";
 import { Breadcrumb } from "@/components/ui/navigation";
-import { Button } from "@/components/ui/buttons";
+import { Button, LinkButton } from "@/components/ui/buttons";
 import { Heading } from "@/components/ui/typography";
 import { ProjectIdeaCheckoutModal } from "@/components/ui/modals";
+import { MOCK_PURCHASED_ACTIVITY_ITEMS, TEAM_WORKSPACE_HREF } from "@/mock";
 import { PROJECTS_IDEAS } from "@/mock/ProjectsIdeas";
 
 interface ProjectIdeasDetailPageProps {
@@ -16,10 +17,13 @@ interface ProjectIdeasDetailPageProps {
 
 const ProjectIdeasDetailPage = ({ id }: ProjectIdeasDetailPageProps) => {
   const project = PROJECTS_IDEAS.find((item) => item.id === Number(id));
+  const isPurchasedFromActivity = MOCK_PURCHASED_ACTIVITY_ITEMS.some(
+    (item) => item.id === Number(id),
+  );
 
   const [saved, setSaved] = useState(project?.isSaved ?? false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-  const [isPurchased, setIsPurchased] = useState(false);
+  const [isPurchased, setIsPurchased] = useState(isPurchasedFromActivity);
 
   if (!project) return notFound();
 
@@ -275,9 +279,19 @@ const ProjectIdeasDetailPage = ({ id }: ProjectIdeasDetailPageProps) => {
             </div>
 
             {isPurchased ? (
-              <Button type="button" variant="primary" size="md" className="min-w-44 px-8" disabled>
-                Purchased
-              </Button>
+              <div className="flex flex-wrap items-center gap-3">
+                <Button type="button" variant="primary" size="md" className="min-w-44 px-8" disabled>
+                  Purchased
+                </Button>
+                <LinkButton
+                  href={TEAM_WORKSPACE_HREF}
+                  variant="secondary"
+                  size="md"
+                  className="min-w-44 justify-center px-8"
+                >
+                  Open project folder
+                </LinkButton>
+              </div>
             ) : (
               <Button
                 type="button"

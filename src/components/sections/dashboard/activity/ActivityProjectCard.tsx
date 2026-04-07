@@ -32,7 +32,7 @@ const ActivityProjectCard = ({ variant, item }: ActivityProjectCardProps) => {
       postedBy={item.postedBy}
       mentorAvatar="/images/user.jpg"
       statusLabel={statusLabel}
-      onAction={() => console.log(variant, item.id, "(mock)")}
+      detailsHref={`/dashboard/projects-ideas/${item.id}`}
     />
   );
 };

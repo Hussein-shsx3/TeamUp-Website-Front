@@ -69,7 +69,7 @@ const RecommendedProjects = () => {
                     variant="secondary"
                     size="sm"
                     className="w-full sm:flex-1 py-3"
-                    href={`/dashboard/projects/${project.id}`}
+                    href={`/dashboard/projects-ideas/${project.id}`}
                   >
                     View Details
                   </LinkButton>

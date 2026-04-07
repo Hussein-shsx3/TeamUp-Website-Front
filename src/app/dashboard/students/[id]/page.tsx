@@ -1,10 +1,6 @@
-import type { Metadata } from "next";
-import { StudentProfilePage } from "@/components/pages";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "TeamUp — Student Profile",
-};
-
-const StudentProfileRoute = () => <StudentProfilePage />;
-
-export default StudentProfileRoute;
+export default function Page({ params }: { params: { id: string } }) {
+  // redirect to unified user profile route
+  redirect(`/dashboard/users/${params.id}`);
+}

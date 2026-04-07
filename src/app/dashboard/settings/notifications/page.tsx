@@ -3,13 +3,19 @@ import {
   NotificationsSettingsForm,
   SettingsShell,
 } from "@/components/sections/dashboard";
+import { MOCK_USER } from "@/mock/Dashboard";
 
 const SettingsNotificationsPage = () => {
+  const isMentor = MOCK_USER.userRole === "mentor";
+
   return (
     <div>
       <Breadcrumb
         items={[
-          { label: "Main Student Dashboard", href: "/dashboard" },
+          {
+            label: isMentor ? "Main Mentor Dashboard" : "Main Student Dashboard",
+            href: "/dashboard",
+          },
           { label: "Settings", href: "/dashboard/settings/profile" },
           { label: "Notifications" },
         ]}

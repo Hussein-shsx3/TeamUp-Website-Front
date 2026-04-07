@@ -1,5 +1,4 @@
 import React from "react";
-import { ChevronDown } from "lucide-react";
 
 interface SelectOption {
   value: string;
@@ -48,12 +47,6 @@ const Select = ({
             </option>
           ))}
         </select>
-        <ChevronDown
-          size={16}
-          className="absolute right-3 top-1/2 -translate-y-1/2
-            text-content-muted pointer-events-none"
-          aria-hidden="true"
-        />
       </div>
       {error && <p className="text-xs text-red-500 font-primary">{error}</p>}
     </div>

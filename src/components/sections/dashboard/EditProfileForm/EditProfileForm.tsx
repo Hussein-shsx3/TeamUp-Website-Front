@@ -22,6 +22,7 @@ export interface EditProfileFormProps {
   /** Save / Cancel row alignment in the form column. */
   actionsAlign?: "start" | "end";
   cancelHref: string;
+  isMentor?: boolean;
 }
 
 const EditProfileForm = ({
@@ -34,6 +35,7 @@ const EditProfileForm = ({
   initialAvatar,
   actionsAlign = "end",
   cancelHref,
+  isMentor = false,
 }: EditProfileFormProps) => {
   const [name, setName] = useState(initialName);
   const [role, setRole] = useState(initialRole);
@@ -68,11 +70,12 @@ const EditProfileForm = ({
         <div className="flex shrink-0 justify-center lg:justify-start">
           <div className="relative h-28 w-28 sm:h-32 sm:w-32 md:h-36 md:w-36">
             <div
-              className="relative h-full w-full overflow-hidden rounded-full ring-2 ring-primary
-              "
+              className={`relative h-full w-full overflow-hidden rounded-full ring-2 ${
+                isMentor ? "ring-primary" : "ring-primary"
+              }`}
             >
               <Image
-                src={"/images/user.jpg"}
+                src={initialAvatar || "/images/user.jpg"}
                 alt={`${name} — profile photo`}
                 fill
                 unoptimized
@@ -104,32 +107,48 @@ const EditProfileForm = ({
                 onChange={(e) => setName(e.target.value)}
                 autoComplete="name"
               />
-              <Input
-                id="profile-role"
-                name="role"
-                label="Role"
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-              />
+              {!isMentor && (
+                <Input
+                  id="profile-role"
+                  name="role"
+                  label="Role"
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                />
+              )}
             </div>
           </div>
 
           <div className={sectionCard}>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
-              <Input
-                id="profile-university"
-                name="university"
-                label="University"
-                value={university}
-                onChange={(e) => setUniversity(e.target.value)}
-              />
-              <Input
-                id="profile-major"
-                name="major"
-                label="Major"
-                value={major}
-                onChange={(e) => setMajor(e.target.value)}
-              />
+              {isMentor ? (
+                <div className="col-span-1 md:col-span-2">
+                  <Input
+                    id="profile-major"
+                    name="major"
+                    label="Academic title"
+                    value={major}
+                    onChange={(e) => setMajor(e.target.value)}
+                  />
+                </div>
+              ) : (
+                <>
+                  <Input
+                    id="profile-university"
+                    name="university"
+                    label="University"
+                    value={university}
+                    onChange={(e) => setUniversity(e.target.value)}
+                  />
+                  <Input
+                    id="profile-major"
+                    name="major"
+                    label="Major"
+                    value={major}
+                    onChange={(e) => setMajor(e.target.value)}
+                  />
+                </>
+              )}
             </div>
           </div>
 

@@ -4,11 +4,11 @@ export type UserRole = "student" | "graduate" | "team_admin" | "mentor";
 
 export const MOCK_USER = {
   name: "Wafaa Amjad",
-  role: "Mentor",
-  userRole: "mentor" as UserRole,
+  role: "Graduate",
+  userRole: "student" as UserRole,
   avatar: "/images/user.jpg",
   skills: ["Fundraising", "System Design", "Full-stack Dev", "Business Scaling"],
-  hasTeam: false,
+  hasTeam: true,
   profileCompletion: 80,
   university: "AlAzhar",
   major: "Software Engineering",
@@ -26,6 +26,25 @@ export const MOCK_STUDENT_PROFILE = {
   major: "Software Engineering",
   bio: "UI/UX Design student dedicated to creating user-centric digital experiences. I combine empathy with data-driven design to build intuitive interfaces. Skilled in Figma, Adobe XD, and visual storytelling. Ready to bring creative ideas to life!",
 };
+
+/** A mentor profile for public viewing (mock) */
+export const MOCK_MENTOR_PROFILE = {
+  id: 9001,
+  name: "Wafaa Amjad",
+  displayRole: "Mentor",
+  avatar: "/images/user.jpg",
+  skills: ["Fundraising", "System Design", "Full-stack Dev", "Business Scaling"],
+  university: "AlAzhar",
+  major: "Senior Product Designer",
+  bio: "UI/UX Design student dedicated to creating user-centric digital experiences. I combine empathy with data-driven design to build intuitive interfaces. Skilled in Figma, Adobe XD, and visual storytelling. Ready to bring creative ideas to life!",
+};
+
+/** Unified users mock list for profile routes */
+export const MOCK_USERS = [MOCK_STUDENT_PROFILE, MOCK_MENTOR_PROFILE];
+
+export function getUserById(id: number) {
+  return MOCK_USERS.find((u) => u.id === Number(id)) ?? null;
+}
 
 export const MOCK_PROJECT = {
   name: "Project Name",
@@ -63,6 +82,9 @@ export interface MockMentorIdeaCard {
   title: string;
   description: string;
   badgeLabel: string;
+  category: string;
+  price: "free" | "paid";
+  techStack: string[];
   viewHref: string;
   editHref: string;
 }
@@ -117,8 +139,11 @@ export const MOCK_MENTOR_POSTED_IDEAS: MockMentorIdeaCard[] = [
     description:
       "This graduation project explores innovative solutions in [Industry Name], focusing on solving real-world challenges through research and practical implementation.",
     badgeLabel: "Free",
+    category: "Software",
+    price: "free",
+    techStack: ["ui design", "mobile design", "research"],
     viewHref: "/dashboard/projects-ideas/1",
-    editHref: "/dashboard/projects-ideas",
+    editHref: "/dashboard/projects-ideas/post-new-idea/1",
   },
   {
     id: 2,
@@ -126,8 +151,11 @@ export const MOCK_MENTOR_POSTED_IDEAS: MockMentorIdeaCard[] = [
     description:
       "This graduation project explores innovative solutions in [Industry Name], focusing on solving real-world challenges through research and practical implementation.",
     badgeLabel: "Paid for 5$",
+    category: "Design",
+    price: "paid",
+    techStack: ["ui design", "branding", "figma"],
     viewHref: "/dashboard/projects-ideas/2",
-    editHref: "/dashboard/projects-ideas",
+    editHref: "/dashboard/projects-ideas/post-new-idea/2",
   },
   {
     id: 3,
@@ -135,8 +163,11 @@ export const MOCK_MENTOR_POSTED_IDEAS: MockMentorIdeaCard[] = [
     description:
       "This graduation project explores innovative solutions in [Industry Name], focusing on solving real-world challenges through research and practical implementation.",
     badgeLabel: "Free",
+    category: "AI / ML",
+    price: "free",
+    techStack: ["machine learning", "python", "data analysis"],
     viewHref: "/dashboard/projects-ideas/3",
-    editHref: "/dashboard/projects-ideas",
+    editHref: "/dashboard/projects-ideas/post-new-idea/3",
   },
 ];
 
@@ -355,10 +386,10 @@ export const MOCK_NEW_MENTOR_OPTIONS = [
 /** Settings area — sidebar labels and routes (mock). */
 export const MOCK_PROFILE_DISPLAY_ROLE = "Student";
 
-export const SETTINGS_NAV_LINKS = [
+export const SETTINGS_NAV_LINKS = (isMentor = false) => [
   {
     id: "profile" as const,
-    label: "Profile",
+    label: isMentor ? "Wafaa Amjad" : "Wafaa Amjad", // Profile section label
     href: "/dashboard/settings/profile",
   },
   {

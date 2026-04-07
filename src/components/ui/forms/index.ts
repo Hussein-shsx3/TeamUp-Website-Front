@@ -5,6 +5,7 @@ export { default as PasswordInput } from "./PasswordInput";
 export { default as OrDivider } from "./OrDivider";
 export { default as SocialButton } from "./SocialButton";
 export { default as SubmitButton } from "./SubmitButton";
+export { default as Switch } from "./Switch";
 export { default as Select } from "./Select";
 export { default as TagInput } from "./TagInput";
 export type { TagInputProps } from "./TagInput";

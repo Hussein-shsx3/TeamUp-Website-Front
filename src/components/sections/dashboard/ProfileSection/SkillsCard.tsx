@@ -4,7 +4,7 @@ interface SkillsCardProps {
 
 const SkillsCard = ({ skills }: SkillsCardProps) => {
   return (
-    <div className="border-t border-gray-100 px-4 py-4 sm:px-6 sm:py-5">
+    <div className="border border-gray-100 px-4 py-4 sm:px-6 sm:py-5 rounded-lg">
       <p className="mb-3 font-primary text-sm font-semibold text-content">
         My Skills
       </p>

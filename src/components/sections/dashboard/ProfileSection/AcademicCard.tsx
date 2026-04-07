@@ -5,7 +5,7 @@ interface AcademicCardProps {
 
 const AcademicCard = ({ university, major }: AcademicCardProps) => {
   return (
-    <div className="border-t border-gray-100 px-4 py-4 sm:px-6 sm:py-5">
+    <div className="border border-gray-100 px-4 py-4 sm:px-6 sm:py-5 rounded-lg my-4">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
         {/* University */}
         <div className="flex min-w-0 flex-col gap-2">

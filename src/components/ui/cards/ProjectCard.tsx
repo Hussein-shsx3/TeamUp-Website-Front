@@ -3,6 +3,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { Bookmark } from "lucide-react";
 import { Button, LinkButton } from "@/components/ui/buttons";
+import { Heading } from "@/components/ui/typography";
 
 /**
  * Represents different project card variants:
@@ -37,7 +38,7 @@ interface ProjectCardProps {
   onSaveToggle?: (saved: boolean) => void;
   /** Handler for details/files button click */
   onAction?: () => void;
-  /** URL for navigation (idea variant) */
+  /** URL for navigation (used by idea, saved, and purchased variants) */
   detailsHref?: string;
   /** Custom CSS classes */
   className?: string;
@@ -114,6 +115,7 @@ const ProjectCard = ({
   const isSaved = variant === "saved";
   const isPurchased = variant === "purchased";
   const isIdea = variant === "idea";
+  const actionLabel = detailsHref ? "View Details" : isPurchased ? "View files" : "View Details";
 
   return (
     <article
@@ -123,9 +125,9 @@ const ProjectCard = ({
     >
       {/* ── Header: Title + Badges/Status ── */}
       <div className="flex items-start justify-between gap-2">
-        <h3 className="font-primary text-base font-semibold leading-tight text-content">
+        <Heading level="h5" className="font-semibold leading-tight text-content-light">
           {title}
-        </h3>
+        </Heading>
 
         <div className="flex shrink-0 items-center gap-2">
           {/* IDEA VARIANT: Price amount + Free/Paid badge + Save button */}
@@ -249,14 +251,14 @@ const ProjectCard = ({
       </p>
 
       {/* ── CTA Button ── */}
-      {isIdea && detailsHref ? (
+      {detailsHref ? (
         <LinkButton
           href={detailsHref}
           variant="primary"
           size="md"
           className="mt-auto w-full justify-center"
         >
-          View Details
+          {actionLabel}
         </LinkButton>
       ) : (
         <Button

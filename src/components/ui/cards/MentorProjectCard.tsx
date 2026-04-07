@@ -7,6 +7,8 @@ import { MoreVertical, PencilLine, Trash2 } from "lucide-react";
 import { LinkButton } from "@/components/ui/buttons";
 import { IconButton } from "@/components/ui/buttons";
 import { ProgressBar } from "@/components/ui/feedback";
+import { DeleteProjectIdeaModal } from "@/components/ui/modals";
+import { Heading } from "@/components/ui/typography";
 import type {
   MockMentorIdeaCard,
   MockMentorSupervisedProject,
@@ -18,6 +20,7 @@ type MentorProjectCardProps =
 
 const MentorProjectCard = (props: MentorProjectCardProps) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -53,9 +56,9 @@ const MentorProjectCard = (props: MentorProjectCardProps) => {
         <div className="flex flex-col gap-4 p-5">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="font-primary text-base font-semibold leading-tight text-content">
+              <Heading level="h4" className="font-semibold leading-tight text-content">
                 {project.name}
-              </p>
+              </Heading>
               <p className="mt-0.5 font-primary text-xs text-content-light">
                 Supervisor by {project.supervisor}
               </p>
@@ -118,9 +121,9 @@ const MentorProjectCard = (props: MentorProjectCardProps) => {
     <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-[0_2px_16px_rgba(0,0,0,0.06)]">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="font-primary text-base font-semibold leading-tight text-content">
+          <Heading level="h5" className="font-semibold leading-tight text-content-light">
             {project.title}
-          </p>
+          </Heading>
           <p className="my-3 max-w-3xl font-primary text-sm leading-relaxed text-content-light">
             {project.description}
           </p>
@@ -165,7 +168,7 @@ const MentorProjectCard = (props: MentorProjectCardProps) => {
                   role="menuitem"
                   onClick={() => {
                     setMenuOpen(false);
-                    console.log("delete mentor idea (mock)");
+                    setDeleteModalOpen(true);
                   }}
                 >
                   <Trash2 className="h-3.5 w-3.5" />
@@ -195,6 +198,16 @@ const MentorProjectCard = (props: MentorProjectCardProps) => {
           Edit Idea
         </LinkButton>
       </div>
+
+      <DeleteProjectIdeaModal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={() => {
+          console.log("delete mentor idea (mock)");
+          setDeleteModalOpen(false);
+        }}
+        projectName={project.title}
+      />
     </div>
   );
 };

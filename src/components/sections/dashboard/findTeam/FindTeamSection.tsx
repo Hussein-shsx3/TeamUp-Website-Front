@@ -129,7 +129,7 @@ const FindTeamSection = () => {
       {/* ── Page Header ── */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <Heading level="h3" className="font-bold text-content-light">
+          <Heading level="h3" className="font-semibold text-content-light">
             Explore Graduation Projects
           </Heading>
           <p className="mt-1 font-primary text-sm text-content-light">

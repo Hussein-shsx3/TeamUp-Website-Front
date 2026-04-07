@@ -15,7 +15,7 @@ export interface MemberOverflowMenuProps {
 const MemberOverflowMenu = ({
   memberId,
   memberName,
-  profileHref = `/dashboard/students/${memberId}`,
+  profileHref = `/dashboard/users/${memberId}`,
   onDelete,
 }: MemberOverflowMenuProps) => {
   const [open, setOpen] = useState(false);

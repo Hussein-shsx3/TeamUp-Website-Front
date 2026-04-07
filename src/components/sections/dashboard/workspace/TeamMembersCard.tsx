@@ -34,7 +34,7 @@ const TeamMembersCard = ({ members, isLead }: TeamMembersCardProps) => {
                 />
               ) : (
                 <Link
-                  href={`/dashboard/students/${m.id}`}
+                  href={`/dashboard/users/${m.id}`}
                   className="flex shrink-0 rounded-lg p-2 text-content-light transition-colors hover:bg-gray-50 hover:text-primary"
                   aria-label={`View ${m.name} profile`}
                 >

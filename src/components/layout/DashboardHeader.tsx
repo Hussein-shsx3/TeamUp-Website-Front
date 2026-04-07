@@ -14,6 +14,7 @@ import {
   ClipboardList,
   Settings,
   LogOut,
+  MessageSquareWarning,
 } from "lucide-react";
 import {
   ProfileDropdown,
@@ -24,6 +25,7 @@ import {
   LogoutModal,
   MentorSupervisionRequestsModal,
   ProjectProposalDetailsModal,
+  ReportIssueModal,
 } from "@/components/ui/modals";
 import { Container } from "@/components/layout";
 import {
@@ -67,6 +69,7 @@ const DashboardHeader = () => {
   const [hasNotification] = useState(true);
 
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
+  const [reportIssueModalOpen, setReportIssueModalOpen] = useState(false);
 
   /* ── nav pill hover ── */
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
@@ -264,8 +267,8 @@ const DashboardHeader = () => {
               type="button"
               onClick={() => setCalendarOpen(true)}
               aria-label="Open calendar"
-              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg
-                text-white/80 transition-all duration-200 hover:bg-white/10 hover:text-white"
+              className="hidden h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg
+                text-white/80 transition-all duration-200 hover:bg-white/10 hover:text-white md:flex"
             >
               <Calendar size={18} aria-hidden="true" />
             </button>
@@ -284,7 +287,7 @@ const DashboardHeader = () => {
                   ${notificationsOpen ? "bg-white/20" : "hover:bg-white/10"}`}
               >
                 <Bell size={18} aria-hidden="true" className="shrink-0" />
-                <span className="truncate font-primary text-xs font-semibold text-white/95 md:hidden">
+                <span className="hidden truncate font-primary text-xs font-semibold text-white/95 sm:inline md:hidden">
                   Alerts
                 </span>
                 {hasNotification && (
@@ -338,6 +341,9 @@ const DashboardHeader = () => {
                 onClose={() => setProfileOpen(false)}
                 anchorRef={profileBtnRef}
                 onLogoutRequest={() => setLogoutModalOpen(true)}
+                onReportIssueRequest={() => {
+                  setReportIssueModalOpen(true);
+                }}
                 isMentor={isMentor}
                 onSupervisionRequestsRequest={openSupervisionRequests}
               />
@@ -385,6 +391,7 @@ const DashboardHeader = () => {
             className={`absolute top-0 left-0 right-0 bg-white rounded-b-[28px]
             shadow-[0_20px_60px_rgba(37,99,235,0.15)]
             transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]
+            max-h-[100dvh] overflow-y-auto overscroll-contain
             ${isRendered ? "translate-y-0" : "-translate-y-full"}`}
           >
             <div className="max-w-[1280px] mx-auto px-4 py-4">
@@ -419,7 +426,7 @@ const DashboardHeader = () => {
 
               {/* Search */}
               <div
-                className={`mb-4 transition-all duration-300 delay-75
+                className={`mb-4 transition-all duration-300 delay-75 pt-4
                 ${isRendered ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-5"}`}
               >
                 <div className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-gray-50 border border-gray-100">
@@ -549,6 +556,25 @@ const DashboardHeader = () => {
                       type="button"
                       onClick={() => {
                         closeMenu();
+                        setReportIssueModalOpen(true);
+                      }}
+                      className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium
+                        w-full text-left transition-all duration-300
+                        ${isRendered ? "opacity-100 translate-x-0 delay-[285ms]" : "opacity-0 -translate-x-5"}
+                        text-content hover:text-primary hover:bg-primary-light/60`}
+                    >
+                      <MessageSquareWarning
+                        size={16}
+                        aria-hidden="true"
+                        className="flex-shrink-0 ml-[2px]"
+                      />
+                      <span className="ml-[2px]">Report an Issue</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        closeMenu();
                         setLogoutModalOpen(true);
                       }}
                       className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium
@@ -584,6 +610,7 @@ const DashboardHeader = () => {
                 >
                   <Calendar size={18} aria-hidden="true" />
                 </button>
+
               </div>
 
               {/* Footer: avatar */}
@@ -643,6 +670,15 @@ const DashboardHeader = () => {
         onClose={() => setLogoutModalOpen(false)}
         onConfirm={() => {
           console.log("logout (mock)");
+        }}
+      />
+
+      <ReportIssueModal
+        isOpen={reportIssueModalOpen}
+        onClose={() => setReportIssueModalOpen(false)}
+        onSubmit={(data) => {
+          console.log("report issue (mock):", data);
+          setReportIssueModalOpen(false);
         }}
       />
 

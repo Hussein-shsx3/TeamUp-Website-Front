@@ -1,11 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
-import { Search, Funnel, ArrowDownWideNarrow } from "lucide-react";
+import { Search, Filter, ChevronDown, ArrowUpDown, X } from "lucide-react";
 import { LinkButton } from "@/components/ui/buttons";
 import { MentorProjectCard } from "@/components/ui/cards";
 import { NoResultsState } from "@/components/ui/display";
+import IdeasFilterPanel, {
+  IdeasFilters,
+} from "@/components/sections/dashboard/projectsIdeas/IdeasFilterPanel";
+import { IDEAS_SORT_OPTIONS } from "@/mock/ProjectsIdeas";
 import {
   MOCK_USER,
   MOCK_MENTOR_POSTED_IDEAS,
@@ -14,8 +18,89 @@ import {
 
 type MentorDashboardTab = "supervise" | "ideas";
 
-const MentorDashboardView = () => {
-  const [activeTab, setActiveTab] = useState<MentorDashboardTab>("supervise");
+interface MentorDashboardViewProps {
+  showSuperviseSection?: boolean;
+}
+
+const EMPTY_FILTERS: IdeasFilters = {
+  category: "",
+  price: "",
+  requiredSkills: [],
+};
+
+function buildActiveChips(filters: IdeasFilters, search: string) {
+  const chips: { key: string; label: string }[] = [];
+  if (search.trim()) chips.push({ key: "search", label: search.trim() });
+  if (filters.category) chips.push({ key: "category", label: filters.category });
+  if (filters.price) chips.push({ key: "price", label: filters.price });
+  filters.requiredSkills.forEach((skill, index) => {
+    chips.push({ key: `skill-${index}`, label: skill });
+  });
+  return chips;
+}
+
+const MentorDashboardView = ({
+  showSuperviseSection = true,
+}: MentorDashboardViewProps) => {
+  const [activeTab, setActiveTab] = useState<MentorDashboardTab>(
+    showSuperviseSection ? "supervise" : "ideas",
+  );
+  const [search, setSearch] = useState("");
+  const [sortValue, setSortValue] = useState("newest");
+  const [sortOpen, setSortOpen] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [stagedFilters, setStagedFilters] = useState<IdeasFilters>(EMPTY_FILTERS);
+  const [appliedFilters, setAppliedFilters] = useState<IdeasFilters>(EMPTY_FILTERS);
+
+  const sortRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!sortOpen) return;
+    const handler = (event: MouseEvent) => {
+      if (!sortRef.current?.contains(event.target as Node)) {
+        setSortOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [sortOpen]);
+
+  const handleApplyFilter = () => {
+    setAppliedFilters(stagedFilters);
+    setFilterOpen(false);
+  };
+
+  const handleCancelFilter = () => {
+    setStagedFilters(appliedFilters);
+    setFilterOpen(false);
+  };
+
+  const activeChips = buildActiveChips(appliedFilters, search);
+  const hasActiveFilters = activeChips.length > 0;
+
+  const removeChip = (key: string) => {
+    if (key === "search") {
+      setSearch("");
+      return;
+    }
+
+    const next = { ...appliedFilters };
+    if (key === "category") next.category = "";
+    else if (key === "price") next.price = "";
+    else if (key.startsWith("skill-")) {
+      const index = parseInt(key.replace("skill-", ""), 10);
+      next.requiredSkills = next.requiredSkills.filter((_, i) => i !== index);
+    }
+
+    setAppliedFilters(next);
+    setStagedFilters(next);
+  };
+
+  const clearAll = () => {
+    setSearch("");
+    setAppliedFilters(EMPTY_FILTERS);
+    setStagedFilters(EMPTY_FILTERS);
+  };
 
   const emptyState =
     activeTab === "supervise"
@@ -27,35 +112,84 @@ const MentorDashboardView = () => {
       : {
           message: "You have not posted any ideas yet",
           actionLabel: "Post New Idea",
-          actionHref: "/dashboard/projects-ideas",
+          actionHref: "/dashboard/projects-ideas/post-new-idea",
         };
 
   const supervisedProjects = MOCK_MENTOR_SUPERVISED_PROJECTS;
   const postedIdeas = MOCK_MENTOR_POSTED_IDEAS;
 
+  const filteredIdeas = useMemo(() => {
+    let list = [...postedIdeas];
+
+    if (search.trim()) {
+      const query = search.trim().toLowerCase();
+      list = list.filter(
+        (idea) =>
+          idea.title.toLowerCase().includes(query) ||
+          idea.description.toLowerCase().includes(query) ||
+          idea.techStack.some((skill) => skill.toLowerCase().includes(query)),
+      );
+    }
+
+    if (appliedFilters.category) {
+      list = list.filter((idea) => idea.category === appliedFilters.category);
+    }
+
+    if (appliedFilters.price) {
+      list = list.filter((idea) => idea.price === appliedFilters.price);
+    }
+
+    if (appliedFilters.requiredSkills.length) {
+      list = list.filter((idea) =>
+        appliedFilters.requiredSkills.every((skill) =>
+          idea.techStack.includes(skill),
+        ),
+      );
+    }
+
+    if (sortValue === "best_match") {
+      list.sort((a, b) => a.title.localeCompare(b.title));
+    } else {
+      list.sort((a, b) => b.id - a.id);
+    }
+
+    return list;
+  }, [postedIdeas, search, appliedFilters, sortValue]);
+
+  const currentSortLabel =
+    IDEAS_SORT_OPTIONS.find((option) => option.value === sortValue)?.label ??
+    "Newest";
+
   return (
     <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-6">
       <div className="flex min-w-0 flex-1 flex-col gap-6">
-        <div className="flex flex-col gap-3 my-3">
-          <div className="flex flex-wrap items-end">
-            <button
-              type="button"
-              onClick={() => setActiveTab("supervise")}
-              className={`-mb-px px-5 border-b-2 pb-3 font-primary text-sm transition-colors ${
-                activeTab === "supervise"
-                  ? "border-primary text-primary"
-                  : "border-gray-200 text-content-light"
-              }`}
-            >
-              Project I Supervise
-            </button>
+        <div className="my-3 flex flex-col gap-3">
+          <div className="flex flex-wrap items-end gap-3">
+            {showSuperviseSection && (
+              <button
+                type="button"
+                onClick={() => setActiveTab("supervise")}
+                className={`-mb-px border-b-2 px-5 pb-3 font-primary text-sm transition-colors ${
+                  activeTab === "supervise"
+                    ? "border-primary text-primary"
+                    : "border-gray-200 text-content-light"
+                }`}
+              >
+                Project I Supervise
+              </button>
+            )}
+
             <button
               type="button"
               onClick={() => setActiveTab("ideas")}
-              className={`-mb-px px-5 border-b-2 pb-3 font-primary text-sm transition-colors ${
-                activeTab === "ideas"
-                  ? "border-primary text-primary"
-                  : "border-gray-200 text-content-light"
+              className={`pb-3 font-primary text-sm transition-colors ${
+                showSuperviseSection
+                  ? `-mb-px border-b-2 px-5 ${
+                      activeTab === "ideas"
+                        ? "border-primary text-primary"
+                        : "border-gray-200 text-content-light"
+                    }`
+                  : "px-0 pb-0 !text-2xl font-semibold text-content-light"
               }`}
             >
               My posted Idea
@@ -70,28 +204,67 @@ const MentorDashboardView = () => {
                 />
                 <input
                   type="search"
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
                   placeholder="Search"
                   className="ml-2 w-full border-0 bg-transparent font-primary text-sm text-content outline-none placeholder:text-content-muted"
                 />
               </div>
+
               <button
                 type="button"
-                className="flex h-10 w-10 items-center justify-center rounded-lg bg-transparent text-primary transition-colors hover:bg-primary-light"
-                aria-label="Sort"
-              >
-                <Funnel
-                  size={18}
-                  strokeWidth={2.2}
-                  aria-hidden="true"
-                />
-              </button>
-              <button
-                type="button"
-                className="flex h-10 w-10 items-center justify-center rounded-lg bg-transparent text-primary transition-colors hover:bg-primary-light"
+                onClick={() => setFilterOpen((open) => !open)}
+                className={`flex h-10 w-10 items-center justify-center rounded-lg transition-colors hover:bg-primary-light ${
+                  filterOpen
+                    ? "bg-primary-light text-primary"
+                    : "bg-transparent text-primary"
+                }`}
                 aria-label="Filter"
               >
-                <ArrowDownWideNarrow size={18} strokeWidth={2.2} aria-hidden="true" />
+                <Filter size={18} strokeWidth={2.2} aria-hidden="true" />
               </button>
+
+              <div ref={sortRef} className="relative">
+                <button
+                  type="button"
+                  onClick={() => setSortOpen((open) => !open)}
+                  className={`flex h-10 items-center gap-2 rounded-lg border px-3 font-primary text-sm transition-colors duration-150 whitespace-nowrap ${
+                    sortOpen
+                      ? "border-primary bg-primary-light text-primary"
+                      : "border-primary bg-white text-primary"
+                  }`}
+                >
+                  <ArrowUpDown size={14} className="shrink-0" aria-hidden="true" />
+                  <span>{currentSortLabel}</span>
+                  <ChevronDown
+                    size={14}
+                    className={`shrink-0 transition-transform duration-200 ${sortOpen ? "rotate-180" : ""}`}
+                    aria-hidden="true"
+                  />
+                </button>
+
+                {sortOpen && (
+                  <div className="absolute right-0 top-[calc(100%+4px)] z-30 min-w-full rounded-xl border border-gray-100 bg-white py-1 shadow-lg sm:min-w-[7.5rem]">
+                    {IDEAS_SORT_OPTIONS.map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        onClick={() => {
+                          setSortValue(option.value);
+                          setSortOpen(false);
+                        }}
+                        className={`flex w-full items-center px-4 py-2.5 font-primary text-sm transition-colors duration-150 ${
+                          sortValue === option.value
+                            ? "bg-primary-light font-semibold text-primary"
+                            : "text-content hover:bg-gray-50"
+                        }`}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -104,36 +277,83 @@ const MentorDashboardView = () => {
               />
               <input
                 type="search"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
                 placeholder="Search"
                 className="ml-2 w-full border-0 bg-transparent font-primary text-sm text-content outline-none placeholder:text-content-muted"
               />
             </div>
             <button
               type="button"
+              onClick={() => setSortOpen((open) => !open)}
               className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-primary shadow-[0_1px_4px_rgba(0,0,0,0.04)]"
               aria-label="Sort"
             >
-              <Funnel
-                size={16}
-                strokeWidth={2.2}
-                aria-hidden="true"
-              />
+              <ArrowUpDown size={16} strokeWidth={2.2} aria-hidden="true" />
             </button>
             <button
               type="button"
-              className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-primary shadow-[0_1px_4px_rgba(0,0,0,0.04)]"
+              onClick={() => setFilterOpen((open) => !open)}
+              className={`flex h-10 w-10 items-center justify-center rounded-lg border shadow-[0_1px_4px_rgba(0,0,0,0.04)] ${
+                filterOpen
+                  ? "border-primary bg-primary-light text-primary"
+                  : "border-gray-200 bg-white text-primary"
+              }`}
               aria-label="Filter"
             >
-              <ArrowDownWideNarrow size={16} strokeWidth={2.2} aria-hidden="true" />
+              <Filter size={16} strokeWidth={2.2} aria-hidden="true" />
             </button>
           </div>
+
+          {hasActiveFilters && (
+            <div className="flex flex-wrap items-center gap-2 pt-2">
+              {activeChips.map((chip) => (
+                <span
+                  key={chip.key}
+                  className="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white px-3 py-1 font-primary text-xs font-medium text-content"
+                >
+                  {chip.label}
+                  <button
+                    type="button"
+                    onClick={() => removeChip(chip.key)}
+                    aria-label={`Remove ${chip.label}`}
+                    className="ml-1 text-content-muted transition-colors hover:text-error"
+                  >
+                    <X size={11} />
+                  </button>
+                </span>
+              ))}
+              <button
+                type="button"
+                onClick={clearAll}
+                className="font-primary text-xs font-medium text-primary hover:underline"
+              >
+                Clear All
+              </button>
+            </div>
+          )}
+
+          {filterOpen && (
+            <div className="w-full pt-2">
+              <IdeasFilterPanel
+                filters={stagedFilters}
+                onChange={setStagedFilters}
+                onApply={handleApplyFilter}
+                onCancel={handleCancelFilter}
+              />
+            </div>
+          )}
         </div>
 
-        {activeTab === "supervise" ? (
+        {showSuperviseSection && activeTab === "supervise" ? (
           supervisedProjects.length > 0 ? (
             <div className="grid grid-cols-1 gap-5">
               {supervisedProjects.map((project) => (
-                <MentorProjectCard key={project.id} variant="supervise" project={project} />
+                <MentorProjectCard
+                  key={project.id}
+                  variant="supervise"
+                  project={project}
+                />
               ))}
             </div>
           ) : (
@@ -143,9 +363,9 @@ const MentorDashboardView = () => {
               actionHref={emptyState.actionHref}
             />
           )
-        ) : postedIdeas.length > 0 ? (
+        ) : filteredIdeas.length > 0 ? (
           <div className="flex flex-col gap-4">
-            {postedIdeas.map((idea) => (
+            {filteredIdeas.map((idea) => (
               <MentorProjectCard key={idea.id} variant="idea" project={idea} />
             ))}
           </div>
@@ -174,7 +394,9 @@ const MentorDashboardView = () => {
             <p className="mt-4 font-primary text-base font-semibold text-content-light">
               {MOCK_USER.name}
             </p>
-            <p className="font-primary text-sm text-content-light">Mentor</p>
+            <p className="font-primary text-sm text-content-light">
+              {MOCK_USER.role}
+            </p>
           </div>
 
           <div className="mt-8">
@@ -208,7 +430,7 @@ const MentorDashboardView = () => {
             Have a project idea in your mind but you do see here?
           </p>
           <LinkButton
-            href="/dashboard/projects-ideas"
+            href="/dashboard/projects-ideas/post-new-idea"
             variant="secondary"
             size="md"
             className="mt-4 w-full"
