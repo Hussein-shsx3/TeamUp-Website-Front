@@ -73,12 +73,12 @@ const Modal = ({
      */
     <div
       data-lenis-prevent
-      className="fixed inset-0 z-50 overflow-hidden"
+      className="fixed inset-0 z-[60] overflow-hidden"
       role="dialog"
       aria-modal="true"
     >
       <div
-        className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"
+        className="absolute inset-0 bg-black/50 backdrop-blur-[2px]"
         onClick={closeOnBackdrop ? onClose : undefined}
         aria-hidden="true"
       />

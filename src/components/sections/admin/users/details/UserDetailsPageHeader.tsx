@@ -6,9 +6,11 @@ import { Heading } from "@/components/ui/typography";
 
 interface UserDetailsPageHeaderProps {
   userName: string;
+  onApprove?: () => void;
+  onReject?: () => void;
 }
 
-const UserDetailsPageHeader = ({ userName }: UserDetailsPageHeaderProps) => {
+const UserDetailsPageHeader = ({ userName, onApprove, onReject }: UserDetailsPageHeaderProps) => {
   return (
     <>
       <Breadcrumb
@@ -28,14 +30,21 @@ const UserDetailsPageHeader = ({ userName }: UserDetailsPageHeaderProps) => {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button type="button" variant="primary" size="md" className="h-10 px-4 text-sm shadow-none">
+          <Button
+            type="button"
+            variant="primary"
+            size="md"
+            onClick={onApprove}
+            className="h-10 px-4 text-sm shadow-none"
+          >
             Approve
           </Button>
           <Button
             type="button"
             variant="secondary"
             size="md"
-            className="h-10 border-rose-200 px-4 text-sm text-rose-500 hover:border-rose-300"
+            onClick={onReject}
+            className="h-10 border-rose-200 px-5 text-sm !text-rose-500 hover:border-rose-300 hover:!bg-rose-50"
           >
             Reject
           </Button>

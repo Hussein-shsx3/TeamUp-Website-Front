@@ -142,18 +142,27 @@ const buildMentorDetails = (record: AdminUserRecord): AdminUserDetailRecord => (
   areaOfExpertise: "UI/UX Design",
   activeProjects: 5,
   completedProjects: 7,
-  supervisedProjects: [
-    { teamName: "Team name", status: "Completed", members: ["SA", "WA", "AA", "LA"], selected: false },
-    { teamName: "Team name", status: "In Progress", members: ["SA", "WA", "AA", "LA"], selected: true },
-    { teamName: "Team name", status: "In Progress", members: ["SA", "WA", "AA", "LA"], selected: true },
-    { teamName: "Team name", status: "In Progress", members: ["SA", "WA", "AA", "LA"], selected: false },
-    { teamName: "Team name", status: "Completed", members: ["SA", "WA", "AA", "LA"], selected: false },
-  ],
-  postedIdeas: [
-    { title: "Idea Title", status: "Pending", date: "2 days ago", selected: false },
-    { title: "Idea Title", status: "Approved", date: "2 days ago", selected: true },
-    { title: "Idea Title", status: "Rejected", date: "2 days ago", selected: false },
-  ],
+  supervisedProjects: Array.from({ length: 12 }, (_, index) => {
+    const projectNumber = index + 1;
+    return {
+      teamName: `Team Project ${projectNumber}`,
+      status: projectNumber % 3 === 0 ? "Completed" : "In Progress",
+      members: ["SA", "WA", "AA", "LA"],
+      selected: projectNumber % 4 === 0,
+    } as const;
+  }),
+  postedIdeas: Array.from({ length: 8 }, (_, index) => {
+    const ideaNumber = index + 1;
+    const status: AdminUserPostedIdeaRecord["status"] =
+      ideaNumber % 3 === 0 ? "Rejected" : ideaNumber % 2 === 0 ? "Approved" : "Pending";
+
+    return {
+      title: `Idea Title ${ideaNumber}`,
+      status,
+      date: "2 days ago",
+      selected: ideaNumber % 2 === 0,
+    } as const;
+  }),
 });
 
 const buildGraduateDetails = (record: AdminUserRecord): AdminUserDetailRecord => ({

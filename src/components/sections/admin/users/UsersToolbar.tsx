@@ -39,7 +39,7 @@ const UsersToolbar = ({
           onChange={(event) => onQueryChange(event.target.value)}
           placeholder="Search by name or email"
           aria-label="Search users"
-          className="h-11 w-full rounded-xl border border-slate-200 bg-white pl-10 pr-4 font-primary text-sm text-content placeholder:text-slate-400 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/20"
+          className="h-11 w-full rounded-lg border border-slate-200 bg-white pl-10 pr-4 font-primary text-sm text-content placeholder:text-slate-400 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/20"
         />
       </div>
 
@@ -51,7 +51,7 @@ const UsersToolbar = ({
               onStatusFilterChange(event.target.value as AdminUsersStatusFilter)
             }
             aria-label="Filter by status"
-            className="h-11 rounded-xl border border-slate-200 bg-white pl-5 pr-0 font-primary text-sm text-content focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/20"
+            className="h-11 rounded-lg border border-slate-200 bg-white pl-5 pr-0 font-primary text-sm text-content focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/20"
           >
             {ADMIN_USERS_STATUS_FILTERS.map((option) => (
               <option key={option} value={option}>
@@ -68,7 +68,7 @@ const UsersToolbar = ({
               onRoleFilterChange(event.target.value as AdminUsersRoleFilter)
             }
             aria-label="Filter by role"
-            className="h-11 rounded-xl border border-slate-200 bg-white pl-5 pr-0 font-primary text-sm text-content focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/20"
+            className="h-11 rounded-lg border border-slate-200 bg-white pl-5 pr-0 font-primary text-sm text-content focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/20"
           >
             {ADMIN_USERS_ROLE_FILTERS.map((option) => (
               <option key={option} value={option}>

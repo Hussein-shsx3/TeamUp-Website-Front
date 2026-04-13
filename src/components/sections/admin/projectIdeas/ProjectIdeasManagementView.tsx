@@ -4,77 +4,75 @@ import { useEffect, useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, CheckCircle2 } from "lucide-react";
 import { Breadcrumb } from "@/components/ui/navigation";
 import {
-  ApproveUserModal,
-  DisableUserModal,
-  EnableUserModal,
-  RejectUserModal,
-  WarnUserModal,
+  ApproveProjectIdeaModal,
+  DisableProjectIdeaModal,
+  EnableProjectIdeaModal,
+  RejectProjectIdeaModal,
 } from "@/components/ui/modals";
 import { Heading } from "@/components/ui/typography";
 import {
-  ADMIN_USERS,
-  ADMIN_USERS_PAGE_SIZE_OPTIONS,
-  type AdminUserAction,
-  type AdminUserRecord,
-  type AdminUsersRoleFilter,
-  type AdminUsersStatusFilter,
-} from "@/mock/AdminUsers";
-import UsersToolbar from "./UsersToolbar";
-import UsersTable from "./UsersTable";
-import UsersBulkActionsBar from "./UsersBulkActionsBar";
+  ADMIN_PROJECT_IDEAS,
+  type AdminProjectIdeaRecord,
+  type AdminProjectIdeaStatus,
+} from "@/mock/ProjectsIdeas";
+import ProjectIdeasToolbar from "./ProjectIdeasToolbar";
+import ProjectIdeasTable from "./ProjectIdeasTable";
+import ProjectIdeasBulkActionsBar from "./ProjectIdeasBulkActionsBar";
 
 const INITIAL_PAGE_SIZE = 12;
 
-const UsersManagementView = () => {
-  const [users, setUsers] = useState<AdminUserRecord[]>(ADMIN_USERS);
+const ProjectIdeasManagementView = () => {
+  const [ideas, setIdeas] = useState<AdminProjectIdeaRecord[]>(ADMIN_PROJECT_IDEAS);
   const [query, setQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<AdminUsersStatusFilter>("All");
-  const [roleFilter, setRoleFilter] = useState<AdminUsersRoleFilter>("All");
+  const [statusFilter, setStatusFilter] = useState<AdminProjectIdeaStatus | "All">("All");
+  const [typeFilter, setTypeFilter] = useState<"All" | "free" | "paid">("All");
   const [itemsPerPage, setItemsPerPage] = useState(INITIAL_PAGE_SIZE);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
-  const [selectedIds, setSelectedIds] = useState<Set<number>>(() => new Set([29, 30]));
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(
+    () => new Set(ADMIN_PROJECT_IDEAS.filter((idea) => idea.selected).map((idea) => idea.id)),
+  );
   const [notice, setNotice] = useState<string | null>(null);
   const [activeActionModal, setActiveActionModal] = useState<{
-    action: AdminUserAction;
-    user: AdminUserRecord;
+    action: "approve" | "reject" | "disable" | "enable";
+    idea: AdminProjectIdeaRecord;
   } | null>(null);
 
-  const filteredUsers = useMemo(() => {
+  const filteredIdeas = useMemo(() => {
     const search = query.trim().toLowerCase();
 
-    return users.filter((user) => {
+    return ideas.filter((idea) => {
       const matchesQuery =
         search.length === 0 ||
-        user.name.toLowerCase().includes(search) ||
-        user.email.toLowerCase().includes(search);
-      const matchesStatus = statusFilter === "All" || user.status === statusFilter;
-      const matchesRole = roleFilter === "All" || user.role === roleFilter;
-      return matchesQuery && matchesStatus && matchesRole;
+        idea.name.toLowerCase().includes(search) ||
+        idea.submittedBy.toLowerCase().includes(search);
+      const matchesStatus = statusFilter === "All" || idea.status === statusFilter;
+      const matchesType = typeFilter === "All" || idea.price === typeFilter;
+      return matchesQuery && matchesStatus && matchesType;
     });
-  }, [query, roleFilter, statusFilter, users]);
+  }, [typeFilter, ideas, query, statusFilter]);
 
-  const sortedUsers = useMemo(() => {
-    return [...filteredUsers].sort((leftUser, rightUser) => {
-      const leftTime = new Date(leftUser.joinedAt).getTime();
-      const rightTime = new Date(rightUser.joinedAt).getTime();
+  const sortedIdeas = useMemo(() => {
+    return [...filteredIdeas].sort((leftIdea, rightIdea) => {
+      const leftTime = new Date(leftIdea.postedAt).getTime();
+      const rightTime = new Date(rightIdea.postedAt).getTime();
       return sortDirection === "desc" ? rightTime - leftTime : leftTime - rightTime;
     });
-  }, [filteredUsers, sortDirection]);
+  }, [filteredIdeas, sortDirection]);
 
-  const totalPages = Math.max(1, Math.ceil(sortedUsers.length / itemsPerPage));
+  const totalPages = Math.max(1, Math.ceil(sortedIdeas.length / itemsPerPage));
   const safeCurrentPage = Math.min(currentPage, totalPages);
 
-  const paginatedUsers = useMemo(() => {
+  const paginatedIdeas = useMemo(() => {
     const startIndex = (safeCurrentPage - 1) * itemsPerPage;
-    return sortedUsers.slice(startIndex, startIndex + itemsPerPage);
-  }, [itemsPerPage, safeCurrentPage, sortedUsers]);
+    return sortedIdeas.slice(startIndex, startIndex + itemsPerPage);
+  }, [itemsPerPage, safeCurrentPage, sortedIdeas]);
 
   const selectedCount = selectedIds.size;
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [query, statusFilter, roleFilter, itemsPerPage]);
+  }, [query, statusFilter, typeFilter, itemsPerPage]);
 
   useEffect(() => {
     if (currentPage > totalPages) {
@@ -84,108 +82,123 @@ const UsersManagementView = () => {
 
   useEffect(() => {
     setNotice(null);
-  }, [query, statusFilter, roleFilter, sortDirection, itemsPerPage]);
+  }, [query, statusFilter, typeFilter, sortDirection, itemsPerPage]);
 
-  const toggleUserSelection = (userId: number) => {
+  const toggleIdeaSelection = (ideaId: number) => {
     setSelectedIds((previous) => {
       const next = new Set(previous);
-      if (next.has(userId)) {
-        next.delete(userId);
+      if (next.has(ideaId)) {
+        next.delete(ideaId);
       } else {
-        next.add(userId);
+        next.add(ideaId);
       }
       return next;
     });
   };
 
-  const toggleVisibleUsersSelection = (visibleUserIds: number[]) => {
+  const toggleVisibleIdeasSelection = (ideaIds: number[]) => {
     setSelectedIds((previous) => {
       const next = new Set(previous);
-      const allVisibleSelected = visibleUserIds.every((userId) => next.has(userId));
+      const allVisibleSelected = ideaIds.every((ideaId) => next.has(ideaId));
 
       if (allVisibleSelected) {
-        visibleUserIds.forEach((userId) => next.delete(userId));
+        ideaIds.forEach((ideaId) => next.delete(ideaId));
         return next;
       }
 
-      visibleUserIds.forEach((userId) => next.add(userId));
+      ideaIds.forEach((ideaId) => next.add(ideaId));
       return next;
     });
   };
 
-  const updateUsersStatus = (userIds: number[], status: AdminUserRecord["status"]) => {
-    setUsers((previous) =>
-      previous.map((user) =>
-        userIds.includes(user.id) ? { ...user, status } : user,
-      ),
+  const updateIdeaStatus = (ideaIds: number[], status: AdminProjectIdeaStatus) => {
+    setIdeas((previous) =>
+      previous.map((idea) => (ideaIds.includes(idea.id) ? { ...idea, status } : idea)),
     );
   };
 
-  const requestRowAction = (action: AdminUserAction, user: AdminUserRecord) => {
-    setActiveActionModal({ action, user });
+  const requestIdeaAction = (action: "approve" | "reject", idea: AdminProjectIdeaRecord) => {
+    setActiveActionModal({ action, idea });
   };
 
-  const handleConfirmedRowAction = (action: AdminUserAction, user: AdminUserRecord) => {
-    if (action === "warn") {
-      setNotice(`Warning sent to ${user.name}`);
-      return;
-    }
+  const requestDisableAction = (idea: AdminProjectIdeaRecord) => {
+    setActiveActionModal({ action: "disable", idea });
+  };
 
-    if (action === "approve" || action === "enable") {
-      updateUsersStatus([user.id], "Active");
-      setNotice(`${user.name} is now active`);
-      return;
-    }
-
-    if (action === "reject" || action === "disable") {
-      updateUsersStatus([user.id], "Blocked");
-      setNotice(`${user.name} has been blocked`);
-    }
+  const requestEnableAction = (idea: AdminProjectIdeaRecord) => {
+    setActiveActionModal({ action: "enable", idea });
   };
 
   const closeActionModal = () => setActiveActionModal(null);
 
-  const confirmActiveAction = () => {
+  const confirmActiveAction = (reason?: string) => {
     if (!activeActionModal) return;
-    handleConfirmedRowAction(activeActionModal.action, activeActionModal.user);
+
+    if (activeActionModal.action === "approve") {
+      updateIdeaStatus([activeActionModal.idea.id], "Approved");
+      setNotice(`${activeActionModal.idea.name} approved`);
+      setActiveActionModal(null);
+      return;
+    }
+
+    if (activeActionModal.action === "disable") {
+      updateIdeaStatus([activeActionModal.idea.id], "Rejected");
+      setNotice(`${activeActionModal.idea.name} disabled`);
+      setActiveActionModal(null);
+      return;
+    }
+
+    if (activeActionModal.action === "enable") {
+      updateIdeaStatus([activeActionModal.idea.id], "Approved");
+      setNotice(`${activeActionModal.idea.name} enabled`);
+      setActiveActionModal(null);
+      return;
+    }
+
+    updateIdeaStatus([activeActionModal.idea.id], "Rejected");
+    setNotice(
+      reason?.trim()
+        ? `${activeActionModal.idea.name} rejected: ${reason.trim()}`
+        : `${activeActionModal.idea.name} rejected`,
+    );
     setActiveActionModal(null);
   };
 
   const handleBulkApprove = () => {
     const ids = [...selectedIds];
     if (ids.length === 0) return;
-    updateUsersStatus(ids, "Active");
-    setNotice(`${ids.length} user${ids.length > 1 ? "s" : ""} approved`);
+    updateIdeaStatus(ids, "Approved");
+    setNotice(`${ids.length} idea${ids.length > 1 ? "s" : ""} approved`);
   };
 
   const handleBulkReject = () => {
     const ids = [...selectedIds];
     if (ids.length === 0) return;
-    updateUsersStatus(ids, "Blocked");
-    setNotice(`${ids.length} user${ids.length > 1 ? "s" : ""} rejected`);
+    updateIdeaStatus(ids, "Rejected");
+    setNotice(`${ids.length} idea${ids.length > 1 ? "s" : ""} rejected`);
   };
 
   return (
     <div className="flex flex-col">
-      <Breadcrumb items={[{ label: "Dashboard", href: "/admin" }, { label: "Users Management" }]} />
+      <Breadcrumb items={[{ label: "Dashboard", href: "/admin" }, { label: "Project Ideas" }]} />
 
-      <section className="space-y-1 mb-5">
+      <section className="mb-5 space-y-1">
         <Heading level="h4" className="text-[28px] font-semibold text-content sm:text-[30px]">
-          Users Management
+          Project Ideas
         </Heading>
         <p className="max-w-2xl font-primary text-sm text-slate-500 sm:text-base">
-          Manage and control platform users
+          Review, filter, and moderate submitted project ideas.
         </p>
       </section>
 
       <section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_2px_12px_rgba(15,23,42,0.04)]">
-        <UsersToolbar
+        <ProjectIdeasToolbar
           query={query}
           statusFilter={statusFilter}
-          roleFilter={roleFilter}
+          typeFilter={typeFilter}
           onQueryChange={setQuery}
           onStatusFilterChange={setStatusFilter}
-          onRoleFilterChange={setRoleFilter}
+          onTypeFilterChange={setTypeFilter}
         />
 
         {notice ? (
@@ -197,14 +210,17 @@ const UsersManagementView = () => {
           </div>
         ) : null}
 
-        <UsersTable
-          users={paginatedUsers}
+        <ProjectIdeasTable
+          ideas={paginatedIdeas}
           selectedIds={selectedIds}
-          onToggleUser={toggleUserSelection}
-          onToggleSelectAll={toggleVisibleUsersSelection}
-          onUserAction={requestRowAction}
+          onToggleIdea={toggleIdeaSelection}
+          onToggleSelectAll={toggleVisibleIdeasSelection}
           onToggleSort={() => setSortDirection((previous) => (previous === "desc" ? "asc" : "desc"))}
           sortDirection={sortDirection}
+          onApprove={(idea) => requestIdeaAction("approve", idea)}
+          onReject={(idea) => requestIdeaAction("reject", idea)}
+          onDisable={requestDisableAction}
+          onEnable={requestEnableAction}
         />
 
         <div className="flex flex-col gap-4 border-t border-slate-100 p-4 sm:p-5 lg:flex-row lg:items-center lg:justify-between">
@@ -215,7 +231,7 @@ const UsersManagementView = () => {
               onChange={(event) => setItemsPerPage(Number(event.target.value))}
               className="h-8 w-20 rounded-lg border border-slate-200 bg-white pl-2 pr-8 font-primary text-xs text-slate-600 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/20 sm:w-16"
             >
-              {ADMIN_USERS_PAGE_SIZE_OPTIONS.map((option) => (
+              {[12, 24, 36].map((option) => (
                 <option key={option} value={option}>
                   {option}
                 </option>
@@ -263,7 +279,7 @@ const UsersManagementView = () => {
         </div>
 
         <div className="flex justify-center px-4 pb-5 sm:px-5">
-          <UsersBulkActionsBar
+          <ProjectIdeasBulkActionsBar
             selectedCount={selectedCount}
             onApprove={handleBulkApprove}
             onReject={handleBulkReject}
@@ -272,35 +288,29 @@ const UsersManagementView = () => {
 
         {activeActionModal ? (
           <>
-            <ApproveUserModal
+            <ApproveProjectIdeaModal
               isOpen={activeActionModal.action === "approve"}
               onClose={closeActionModal}
-              onConfirm={confirmActiveAction}
-              userName={activeActionModal.user.name}
+              onConfirm={() => confirmActiveAction()}
+              ideaName={activeActionModal.idea.name}
             />
-            <RejectUserModal
+            <RejectProjectIdeaModal
               isOpen={activeActionModal.action === "reject"}
               onClose={closeActionModal}
-              onConfirm={confirmActiveAction}
-              userName={activeActionModal.user.name}
+              onConfirm={(reason) => confirmActiveAction(reason)}
+              ideaName={activeActionModal.idea.name}
             />
-            <DisableUserModal
+            <DisableProjectIdeaModal
               isOpen={activeActionModal.action === "disable"}
               onClose={closeActionModal}
-              onConfirm={confirmActiveAction}
-              userName={activeActionModal.user.name}
+              onConfirm={() => confirmActiveAction()}
+              ideaName={activeActionModal.idea.name}
             />
-            <EnableUserModal
+            <EnableProjectIdeaModal
               isOpen={activeActionModal.action === "enable"}
               onClose={closeActionModal}
-              onConfirm={confirmActiveAction}
-              userName={activeActionModal.user.name}
-            />
-            <WarnUserModal
-              isOpen={activeActionModal.action === "warn"}
-              onClose={closeActionModal}
               onConfirm={() => confirmActiveAction()}
-              userName={activeActionModal.user.name}
+              ideaName={activeActionModal.idea.name}
             />
           </>
         ) : null}
@@ -309,4 +319,4 @@ const UsersManagementView = () => {
   );
 };
 
-export default UsersManagementView;
+export default ProjectIdeasManagementView;

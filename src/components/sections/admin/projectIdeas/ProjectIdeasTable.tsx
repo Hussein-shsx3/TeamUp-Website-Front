@@ -4,28 +4,22 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ArrowUpDown } from "lucide-react";
-import type {
-  AdminUserAction,
-  AdminUserRecord,
-} from "@/mock/AdminUsers";
-import AdminUserActionsMenu from "./AdminUserActionsMenu";
-import { UserStatusBadge } from "./UserStatusBadge";
+import type { AdminProjectIdeaRecord } from "@/mock/ProjectsIdeas";
+import ProjectIdeaActionsMenu from "./ProjectIdeaActionsMenu";
+import ProjectIdeaStatusBadge from "./ProjectIdeaStatusBadge";
 
-interface UsersTableProps {
-  users: AdminUserRecord[];
+interface ProjectIdeasTableProps {
+  ideas: AdminProjectIdeaRecord[];
   selectedIds: Set<number>;
-  onToggleUser: (id: number) => void;
-  onToggleSelectAll: (userIds: number[]) => void;
-  onUserAction: (action: AdminUserAction, user: AdminUserRecord) => void;
+  onToggleIdea: (id: number) => void;
+  onToggleSelectAll: (ideaIds: number[]) => void;
   onToggleSort: () => void;
   sortDirection: "asc" | "desc";
+  onApprove: (idea: AdminProjectIdeaRecord) => void;
+  onReject: (idea: AdminProjectIdeaRecord) => void;
+  onDisable: (idea: AdminProjectIdeaRecord) => void;
+  onEnable: (idea: AdminProjectIdeaRecord) => void;
 }
-
-const roleClasses: Record<AdminUserRecord["role"], string> = {
-  Student: "text-blue-500",
-  Mentor: "text-emerald-500",
-  Graduate: "text-amber-500",
-};
 
 const formatDate = (value: string) =>
   new Intl.DateTimeFormat("en-US", {
@@ -34,28 +28,29 @@ const formatDate = (value: string) =>
     year: "numeric",
   }).format(new Date(value));
 
-const UsersTable = ({
-  users,
+const ProjectIdeasTable = ({
+  ideas,
   selectedIds,
-  onToggleUser,
+  onToggleIdea,
   onToggleSelectAll,
-  onUserAction,
   onToggleSort,
   sortDirection,
-}: UsersTableProps) => {
+  onApprove,
+  onReject,
+  onDisable,
+  onEnable,
+}: ProjectIdeasTableProps) => {
   const selectAllRef = useRef<HTMLInputElement>(null);
-  const [openMenuId, setOpenMenuId] = useState<number | null>(null);
   const router = useRouter();
-
-  const allSelected = users.length > 0 && users.every((user) => selectedIds.has(user.id));
-  const someSelected = users.some((user) => selectedIds.has(user.id));
+  const allSelected = ideas.length > 0 && ideas.every((idea) => selectedIds.has(idea.id));
+  const someSelected = ideas.some((idea) => selectedIds.has(idea.id));
 
   useEffect(() => {
     if (!selectAllRef.current) return;
     selectAllRef.current.indeterminate = someSelected && !allSelected;
   }, [allSelected, someSelected]);
 
-  const userIds = useMemo(() => users.map((user) => user.id), [users]);
+  const ideaIds = useMemo(() => ideas.map((idea) => idea.id), [ideas]);
 
   return (
     <div className="overflow-x-auto">
@@ -67,23 +62,23 @@ const UsersTable = ({
                 ref={selectAllRef}
                 type="checkbox"
                 checked={allSelected}
-                onChange={() => onToggleSelectAll(userIds)}
-                aria-label="Select all users on the current page"
+                onChange={() => onToggleSelectAll(ideaIds)}
+                aria-label="Select all project ideas on the current page"
                 className="h-4 w-4 cursor-pointer rounded border-slate-300 text-primary accent-primary focus:ring-primary"
               />
             </th>
-            <th className="border-b border-slate-100 px-4 py-4">Name</th>
-            <th className="border-b border-slate-100 px-4 py-4">Email</th>
+            <th className="border-b border-slate-100 px-4 py-4">Idea Title</th>
+            <th className="border-b border-slate-100 px-4 py-4">Type</th>
+            <th className="border-b border-slate-100 px-4 py-4">Submitted By</th>
             <th className="border-b border-slate-100 px-4 py-4">Status</th>
-            <th className="border-b border-slate-100 px-4 py-4">Role</th>
             <th className="border-b border-slate-100 px-4 py-4">
               <button
                 type="button"
                 onClick={onToggleSort}
                 className="inline-flex items-center gap-1 text-left transition-colors hover:text-slate-600"
-                aria-label={`Sort by join date ${sortDirection === "desc" ? "descending" : "ascending"}`}
+                aria-label={`Sort by date ${sortDirection === "desc" ? "descending" : "ascending"}`}
               >
-                Join Date
+                Date
                 <ArrowUpDown size={12} aria-hidden="true" className="shrink-0" />
               </button>
             </th>
@@ -91,23 +86,23 @@ const UsersTable = ({
           </tr>
         </thead>
         <tbody>
-          {users.map((user) => {
-            const isSelected = selectedIds.has(user.id);
-            const openUserDetails = () => router.push(`/admin/users/${user.id}`);
+          {ideas.map((idea) => {
+            const isSelected = selectedIds.has(idea.id);
+            const openIdeaDetails = () => router.push(`/admin/project-ideas/${idea.id}`);
 
             return (
               <tr
-                key={user.id}
+                key={idea.id}
                 className={`cursor-pointer text-sm text-content transition-colors hover:bg-slate-50/80 ${
                   isSelected ? "bg-primary/5" : ""
                 }`}
                 role="link"
                 tabIndex={0}
-                onClick={openUserDetails}
+                onClick={openIdeaDetails}
                 onKeyDown={(event) => {
                   if (event.key === "Enter" || event.key === " ") {
                     event.preventDefault();
-                    openUserDetails();
+                    openIdeaDetails();
                   }
                 }}
               >
@@ -118,18 +113,28 @@ const UsersTable = ({
                     onClick={(event) => event.stopPropagation()}
                     onChange={(event) => {
                       event.stopPropagation();
-                      onToggleUser(user.id);
+                      onToggleIdea(idea.id);
                     }}
-                    aria-label={`Select ${user.name}`}
+                    aria-label={`Select ${idea.name}`}
                     className="h-4 w-4 cursor-pointer rounded border-slate-300 text-primary accent-primary focus:ring-primary"
                   />
+                </td>
+                <td className="border-b border-slate-100 px-4 py-4 font-primary text-sm font-medium text-content align-middle">
+                  {idea.name}
+                </td>
+                <td className="border-b border-slate-100 px-4 py-4 align-middle">
+                  <span className="font-primary text-sm text-slate-600">
+                    {idea.price === "paid"
+                      ? `Paid`
+                      : "Free"}
+                  </span>
                 </td>
                 <td className="border-b border-slate-100 px-4 py-4 align-middle">
                   <div className="flex min-w-0 items-center gap-3">
                     <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full ring-2 ring-white">
                       <Image
-                        src={user.avatar}
-                        alt={user.name}
+                        src={idea.mentorAvatar}
+                        alt={idea.submittedBy}
                         fill
                         unoptimized
                         className="object-cover"
@@ -138,33 +143,26 @@ const UsersTable = ({
                     </div>
                     <div className="min-w-0">
                       <p className="truncate font-primary text-sm font-medium text-content">
-                        {user.name}
+                        {idea.submittedBy}
                       </p>
-                      <p className="truncate font-primary text-xs text-slate-500">
-                        {user.role}
-                      </p>
+                      <p className="truncate font-primary text-xs text-slate-500">Student</p>
                     </div>
                   </div>
                 </td>
-                <td className="border-b border-slate-100 px-4 py-4 font-primary text-xs text-slate-500 align-middle">
-                  {user.email}
-                </td>
                 <td className="border-b border-slate-100 px-4 py-4 align-middle">
-                  <UserStatusBadge status={user.status} />
-                </td>
-                <td className="border-b border-slate-100 px-4 py-4 align-middle">
-                  <span className={`font-primary text-sm font-medium ${roleClasses[user.role]}`}>
-                    {user.role}
-                  </span>
+                  <ProjectIdeaStatusBadge status={idea.status} />
                 </td>
                 <td className="border-b border-slate-100 px-4 py-4 font-primary text-sm text-slate-600 align-middle">
-                  {formatDate(user.joinedAt)}
+                  {formatDate(idea.postedAt)}
                 </td>
                 <td className="border-b border-slate-100 px-4 py-4 text-right align-middle">
                   <div className="inline-flex justify-end" onClick={(event) => event.stopPropagation()}>
-                    <AdminUserActionsMenu
-                      user={user}
-                      onAction={onUserAction}
+                    <ProjectIdeaActionsMenu
+                      idea={idea}
+                      onApprove={onApprove}
+                      onReject={onReject}
+                      onDisable={onDisable}
+                      onEnable={onEnable}
                     />
                   </div>
                 </td>
@@ -174,13 +172,13 @@ const UsersTable = ({
         </tbody>
       </table>
 
-      {users.length === 0 ? (
+      {ideas.length === 0 ? (
         <div className="border-b border-slate-100 px-4 py-16 text-center font-primary text-sm text-slate-500">
-          No users found for the current search and filter settings.
+          No project ideas found for the current search and filter settings.
         </div>
       ) : null}
     </div>
   );
 };
 
-export default UsersTable;
+export default ProjectIdeasTable;

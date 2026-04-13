@@ -1,16 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
-import {
-  AlertTriangle,
-  Ban,
-  CheckCircle2,
-  Eye,
-  MoreVertical,
-  UserCheck,
-  UserX,
-} from "lucide-react";
+import { createPortal } from "react-dom";
+import { AlertTriangle, MoreVertical, UserCheck, UserX } from "lucide-react";
 import { IconButton } from "@/components/ui/buttons";
 import type { AdminUserAction, AdminUserRecord } from "@/mock/AdminUsers";
 
@@ -22,17 +14,44 @@ interface AdminUserActionsMenuProps {
 const AdminUserActionsMenu = ({ user, onAction }: AdminUserActionsMenuProps) => {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0, width: 176 });
 
   useEffect(() => {
     if (!open) return;
 
     const onDocumentClick = (event: MouseEvent) => {
-      if (rootRef.current?.contains(event.target as Node)) return;
+      const target = event.target as Node;
+      if (rootRef.current?.contains(target)) return;
+      if (menuRef.current?.contains(target)) return;
       setOpen(false);
     };
 
     document.addEventListener("mousedown", onDocumentClick);
     return () => document.removeEventListener("mousedown", onDocumentClick);
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const updatePosition = () => {
+      const trigger = rootRef.current?.querySelector("button");
+      if (!trigger) return;
+
+      const rect = trigger.getBoundingClientRect();
+      const width = 176;
+      const left = Math.max(8, Math.min(rect.right - width, window.innerWidth - width - 8));
+      setMenuPosition({ top: rect.bottom + 8, left, width });
+    };
+
+    updatePosition();
+    window.addEventListener("resize", updatePosition);
+    window.addEventListener("scroll", updatePosition, true);
+
+    return () => {
+      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition, true);
+    };
   }, [open]);
 
   const actions = useMemo(() => {
@@ -41,19 +60,15 @@ const AdminUserActionsMenu = ({ user, onAction }: AdminUserActionsMenuProps) => 
         {
           action: "approve" as const,
           label: "Approve",
-          icon: CheckCircle2,
-          textClass: "text-emerald-600",
         },
         {
           action: "warn" as const,
           label: "Warn user",
-          icon: AlertTriangle,
           textClass: "text-amber-600",
         },
         {
           action: "reject" as const,
           label: "Reject",
-          icon: Ban,
           textClass: "text-rose-600",
         },
       ];
@@ -64,14 +79,7 @@ const AdminUserActionsMenu = ({ user, onAction }: AdminUserActionsMenuProps) => 
         {
           action: "enable" as const,
           label: "Enable",
-          icon: UserCheck,
           textClass: "text-emerald-600",
-        },
-        {
-          action: "warn" as const,
-          label: "Warn user",
-          icon: AlertTriangle,
-          textClass: "text-amber-600",
         },
       ];
     }
@@ -80,13 +88,11 @@ const AdminUserActionsMenu = ({ user, onAction }: AdminUserActionsMenuProps) => 
       {
         action: "disable" as const,
         label: "Disable",
-        icon: UserX,
         textClass: "text-rose-600",
       },
       {
         action: "warn" as const,
         label: "Warn user",
-        icon: AlertTriangle,
         textClass: "text-amber-600",
       },
     ];
@@ -106,38 +112,30 @@ const AdminUserActionsMenu = ({ user, onAction }: AdminUserActionsMenuProps) => 
         <MoreVertical className="h-4 w-4" />
       </IconButton>
 
-      {open ? (
-        <div className="absolute right-0 z-30 mt-2 w-44 overflow-hidden rounded-2xl border border-slate-200 bg-white py-1 shadow-[0_14px_32px_rgba(15,23,42,0.12)]">
-          <Link
-            href={`/admin/users/${user.id}`}
-            className="flex items-center gap-2 px-3 py-2 font-primary text-xs text-content transition-colors hover:bg-slate-50"
-            onClick={() => setOpen(false)}
-          >
-            <Eye className="h-3.5 w-3.5 text-content-light" />
-            View profile
-          </Link>
-
-          <div className="my-1 h-px bg-slate-100" />
-
-          {actions.map((item) => {
-            const Icon = item.icon;
-            return (
-              <button
-                key={item.action}
-                type="button"
-                className={`flex w-full items-center gap-2 px-3 py-2 text-left font-primary text-xs transition-colors hover:bg-slate-50 ${item.textClass}`}
-                onClick={() => {
-                  setOpen(false);
-                  onAction(item.action, user);
-                }}
-              >
-                <Icon className="h-3.5 w-3.5" />
-                {item.label}
-              </button>
-            );
-          })}
-        </div>
-      ) : null}
+      {open && typeof document !== "undefined"
+        ? createPortal(
+            <div
+              ref={menuRef}
+              className="fixed z-50 overflow-hidden border border-slate-200 bg-white shadow-[0_14px_32px_rgba(15,23,42,0.12)]"
+              style={{ top: menuPosition.top, left: menuPosition.left, width: menuPosition.width }}
+            >
+              {actions.map((item) => (
+                <button
+                  key={item.action}
+                  type="button"
+                  className={`flex w-full items-center px-3 py-3 text-left font-primary text-xs transition-colors hover:bg-slate-50 ${item.textClass}`}
+                  onClick={() => {
+                    setOpen(false);
+                    onAction(item.action, user);
+                  }}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>,
+            document.body,
+          )
+        : null}
     </div>
   );
 };

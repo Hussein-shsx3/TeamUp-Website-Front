@@ -19,6 +19,30 @@ export interface ProjectIdea {
   image: string; // Project image/thumbnail
 }
 
+export type AdminProjectIdeaStatus = "Pending" | "Approved" | "Rejected";
+
+export interface AdminProjectIdeaRecord extends ProjectIdea {
+  submittedBy: string;
+  status: AdminProjectIdeaStatus;
+  postedAt: string;
+  selected: boolean;
+}
+
+export interface AdminProjectIdeaDetailRecord extends AdminProjectIdeaRecord {
+  displayTitle: string;
+  displayDescription: string;
+  displayCategory: string;
+  displayDifficultyLevel: string;
+  displayTimeFrame: string;
+  displayTechStack: string[];
+  authorName: string;
+  authorRole: string;
+  authorStatus: string;
+  authorAvatar: string;
+  authorHref: string;
+  postedAtLabel: string;
+}
+
 const DESC =
   "This graduation project explores innovative solutions in [Industry Name], focusing on solving real-world challenges through research and practical implementation.";
 
@@ -161,6 +185,47 @@ export const PROJECTS_IDEAS: ProjectIdea[] = [
     isSaved: true,
     image: "/images/Team.jpg",
   },
+];
+
+const buildPostedAt = (index: number) => {
+  const date = new Date(Date.UTC(2026, 2, index + 1));
+  return date.toISOString();
+};
+
+export const ADMIN_PROJECT_IDEAS: AdminProjectIdeaRecord[] = PROJECTS_IDEAS.map((idea, index) => ({
+  ...idea,
+  submittedBy: idea.postedBy,
+  status: index % 3 === 0 ? "Pending" : index % 3 === 1 ? "Approved" : "Rejected",
+  postedAt: buildPostedAt(index),
+  selected: index % 2 === 0,
+}));
+
+export const ADMIN_PROJECT_IDEA_DETAILS: AdminProjectIdeaDetailRecord[] = ADMIN_PROJECT_IDEAS.map(
+  (idea) => ({
+    ...idea,
+    displayTitle: "Idea Title",
+    displayDescription: idea.description,
+    displayCategory: "Mobile",
+    displayDifficultyLevel: "Intermediate",
+    displayTimeFrame: "3 - 4 Month",
+    displayTechStack: ["ui design", "ui design", "ui design", "ui design", "ui design"],
+    authorName: "Wafaa Amjad",
+    authorRole: "Graduate",
+    authorStatus: "Active",
+    authorAvatar: idea.mentorAvatar,
+    authorHref: "/admin/users/1",
+    postedAtLabel: "Mar.20.2026",
+  }),
+);
+
+export const getAdminProjectIdeaById = (id: number) =>
+  ADMIN_PROJECT_IDEA_DETAILS.find((idea) => idea.id === id) ?? null;
+
+export const ADMIN_PROJECT_IDEA_STATUS_FILTERS: Array<"All" | AdminProjectIdeaStatus> = [
+  "All",
+  "Pending",
+  "Approved",
+  "Rejected",
 ];
 
 export const IDEAS_SORT_OPTIONS = [
