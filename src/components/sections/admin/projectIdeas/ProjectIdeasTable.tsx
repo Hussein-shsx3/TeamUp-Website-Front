@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, Eye } from "lucide-react";
+import { IconButton } from "@/components/ui/buttons";
 import type { AdminProjectIdeaRecord } from "@/mock/ProjectsIdeas";
 import ProjectIdeaActionsMenu from "./ProjectIdeaActionsMenu";
 import ProjectIdeaStatusBadge from "./ProjectIdeaStatusBadge";
@@ -88,23 +89,13 @@ const ProjectIdeasTable = ({
         <tbody>
           {ideas.map((idea) => {
             const isSelected = selectedIds.has(idea.id);
-            const openIdeaDetails = () => router.push(`/admin/project-ideas/${idea.id}`);
 
             return (
               <tr
                 key={idea.id}
-                className={`cursor-pointer text-sm text-content transition-colors hover:bg-slate-50/80 ${
+                className={`text-sm text-content transition-colors hover:bg-slate-50/80 ${
                   isSelected ? "bg-primary/5" : ""
                 }`}
-                role="link"
-                tabIndex={0}
-                onClick={openIdeaDetails}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault();
-                    openIdeaDetails();
-                  }
-                }}
               >
                 <td className="border-b border-slate-100 px-4 py-4 align-middle">
                   <input
@@ -156,7 +147,21 @@ const ProjectIdeasTable = ({
                   {formatDate(idea.postedAt)}
                 </td>
                 <td className="border-b border-slate-100 px-4 py-4 text-right align-middle">
-                  <div className="inline-flex justify-end" onClick={(event) => event.stopPropagation()}>
+                  <div className="inline-flex items-center justify-end gap-1">
+                    <IconButton
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      aria-label={`View details for ${idea.name}`}
+                      className="rounded-full text-content-light hover:bg-slate-100"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        router.push(`/admin/project-ideas/${idea.id}`);
+                      }}
+                    >
+                      <Eye className="h-4 w-4" />
+                    </IconButton>
+
                     <ProjectIdeaActionsMenu
                       idea={idea}
                       onApprove={onApprove}

@@ -52,7 +52,7 @@ const config: Config = {
           light: "#D1FAE5",
         },
         content: {
-          DEFAULT: "#000000",
+          DEFAULT: "#0F172A",
           muted: "#BFC6CC",
           inverse: "#FFFFFF",
           light: "#475569",
