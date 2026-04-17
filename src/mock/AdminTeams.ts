@@ -1,4 +1,4 @@
-export type AdminTeamStatus = "Completed" | "In Progress" | "Pending" | "Rejected";
+export type AdminTeamStatus = "Completed" | "In Progress" | "Pending" | "Rejected" | "Disabled";
 
 export interface AdminTeamMember {
   name: string;
@@ -53,6 +53,7 @@ export const ADMIN_TEAM_STATUS_FILTERS: Array<"All" | AdminTeamStatus> = [
   "In Progress",
   "Pending",
   "Rejected",
+  "Disabled",
 ];
 
 export const ADMIN_TEAM_PAGE_SIZE_OPTIONS = [12, 24, 36];

@@ -99,6 +99,25 @@ const TeamsManagementView = () => {
     router.push(`/admin/teams/${team.id}`);
   };
 
+  const handleGoToWorkspace = () => {
+    router.push("/dashboard/workspace");
+  };
+
+  const handleApprove = (team: AdminTeamReportRecord) => {
+    updateTeamStatus([team.id], "In Progress");
+    setNotice(`${team.reportTitle} approved`);
+  };
+
+  const handleDisable = (team: AdminTeamReportRecord) => {
+    updateTeamStatus([team.id], "Disabled");
+    setNotice(`${team.reportTitle} disabled`);
+  };
+
+  const handleEnable = (team: AdminTeamReportRecord) => {
+    updateTeamStatus([team.id], "Completed");
+    setNotice(`${team.reportTitle} enabled`);
+  };
+
   const handleReject = (team: AdminTeamReportRecord) => {
     updateTeamStatus([team.id], "Rejected");
     setNotice(`${team.reportTitle} rejected`);
@@ -147,6 +166,10 @@ const TeamsManagementView = () => {
           onToggleTeam={toggleTeamSelection}
           onToggleSelectAll={toggleVisibleTeamsSelection}
           onViewReport={handleViewReport}
+          onGoToWorkspace={handleGoToWorkspace}
+          onApprove={handleApprove}
+          onDisable={handleDisable}
+          onEnable={handleEnable}
           onReject={handleReject}
         />
 

@@ -61,24 +61,14 @@ const ReportsActionsMenu = ({
     };
   }, [open]);
 
-  const actions = useMemo(() => {
-    if (report.status === "New") {
-      return [
-        { label: "Mark as Resolved", className: "", action: () => onMarkResolved(report) },
-        { label: "Mark as In Review", className: "", action: () => onMarkInReview(report) },
-        { label: "Reject Report", className: "text-rose-600", action: () => onReject(report) },
-      ];
-    }
-
-    if (report.status === "In Review") {
-      return [
-        { label: "Mark as Resolved", className: "text-emerald-600", action: () => onMarkResolved(report) },
-        { label: "Reject Report", className: "text-rose-600", action: () => onReject(report) },
-      ];
-    }
-
-    return [{ label: "Reject Report", className: "text-rose-600", action: () => onReject(report) }];
-  }, [onMarkInReview, onMarkResolved, onReject, report]);
+  const actions = useMemo(
+    () => [
+      { label: "Mark as Resolved", className: "", action: () => onMarkResolved(report) },
+      { label: "Mark as In Review", className: "", action: () => onMarkInReview(report) },
+      { label: "Reject Report", className: "text-rose-600", action: () => onReject(report) },
+    ],
+    [onMarkInReview, onMarkResolved, onReject, report],
+  );
 
   return (
     <div ref={rootRef} className="relative shrink-0" onClick={(event) => event.stopPropagation()}>

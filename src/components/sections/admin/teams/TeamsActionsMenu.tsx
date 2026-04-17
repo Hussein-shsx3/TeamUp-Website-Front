@@ -8,10 +8,21 @@ import type { AdminTeamReportRecord } from "@/mock/AdminTeams";
 
 interface TeamsActionsMenuProps {
   team: AdminTeamReportRecord;
+  onGoToWorkspace: (team: AdminTeamReportRecord) => void;
+  onApprove: (team: AdminTeamReportRecord) => void;
+  onDisable: (team: AdminTeamReportRecord) => void;
+  onEnable: (team: AdminTeamReportRecord) => void;
   onReject: (team: AdminTeamReportRecord) => void;
 }
 
-const TeamsActionsMenu = ({ team, onReject }: TeamsActionsMenuProps) => {
+const TeamsActionsMenu = ({
+  team,
+  onGoToWorkspace,
+  onApprove,
+  onDisable,
+  onEnable,
+  onReject,
+}: TeamsActionsMenuProps) => {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -54,6 +65,20 @@ const TeamsActionsMenu = ({ team, onReject }: TeamsActionsMenuProps) => {
     };
   }, [open]);
 
+  const actionsByStatus: Record<AdminTeamReportRecord["status"], Array<{ label: string; className?: string; action: () => void }>> = {
+    "In Progress": [
+      { label: "Go to workSpace", action: () => onGoToWorkspace(team) },
+      { label: "Disable", className: "text-rose-600", action: () => onDisable(team) },
+    ],
+    Pending: [
+      { label: "Approve", action: () => onApprove(team) },
+      { label: "Rejet", className: "text-rose-600", action: () => onReject(team) },
+    ],
+    Completed: [{ label: "Disable", className: "text-rose-600", action: () => onDisable(team) }],
+    Disabled: [{ label: "Enable", action: () => onEnable(team) }],
+    Rejected: [{ label: "Enable", action: () => onEnable(team) }],
+  };
+
   return (
     <div ref={rootRef} className="relative shrink-0" onClick={(event) => event.stopPropagation()}>
       <IconButton
@@ -75,16 +100,19 @@ const TeamsActionsMenu = ({ team, onReject }: TeamsActionsMenuProps) => {
               className="fixed z-50 overflow-hidden border border-slate-200 bg-white shadow-[0_14px_32px_rgba(15,23,42,0.12)]"
               style={{ top: menuPosition.top, left: menuPosition.left, width: menuPosition.width }}
             >
-              <button
-                type="button"
-                className="flex w-full items-center px-3 py-3 text-left font-primary text-xs text-rose-600 transition-colors hover:bg-slate-50"
-                onClick={() => {
-                  setOpen(false);
-                  onReject(team);
-                }}
-              >
-                Reject
-              </button>
+              {actionsByStatus[team.status].map((item) => (
+                <button
+                  key={item.label}
+                  type="button"
+                  className={`flex w-full items-center px-3 py-3 text-left font-primary text-xs transition-colors hover:bg-slate-50 ${item.className ?? "text-content"}`}
+                  onClick={() => {
+                    setOpen(false);
+                    item.action();
+                  }}
+                >
+                  {item.label}
+                </button>
+              ))}
             </div>,
             document.body,
           )

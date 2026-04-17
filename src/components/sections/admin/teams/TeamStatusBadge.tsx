@@ -9,6 +9,7 @@ const statusClasses: Record<AdminTeamStatus, string> = {
   "In Progress": "bg-blue-50 text-blue-600 ring-blue-100",
   Pending: "bg-amber-50 text-amber-600 ring-amber-100",
   Rejected: "bg-rose-50 text-rose-600 ring-rose-100",
+  Disabled: "bg-slate-100 text-slate-500 ring-slate-200",
 };
 
 const TeamStatusBadge = ({ status }: TeamStatusBadgeProps) => {

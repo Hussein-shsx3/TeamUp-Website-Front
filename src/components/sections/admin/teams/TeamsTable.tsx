@@ -14,6 +14,10 @@ interface TeamsTableProps {
   onToggleTeam: (id: number) => void;
   onToggleSelectAll: (teamIds: number[]) => void;
   onViewReport: (team: AdminTeamReportRecord) => void;
+  onGoToWorkspace: (team: AdminTeamReportRecord) => void;
+  onApprove: (team: AdminTeamReportRecord) => void;
+  onDisable: (team: AdminTeamReportRecord) => void;
+  onEnable: (team: AdminTeamReportRecord) => void;
   onReject: (team: AdminTeamReportRecord) => void;
 }
 
@@ -23,6 +27,10 @@ const TeamsTable = ({
   onToggleTeam,
   onToggleSelectAll,
   onViewReport,
+  onGoToWorkspace,
+  onApprove,
+  onDisable,
+  onEnable,
   onReject,
 }: TeamsTableProps) => {
   const selectAllRef = useRef<HTMLInputElement>(null);
@@ -157,7 +165,14 @@ const TeamsTable = ({
                       <Eye className="h-4 w-4" />
                     </IconButton>
 
-                    <TeamsActionsMenu team={team} onReject={onReject} />
+                    <TeamsActionsMenu
+                      team={team}
+                      onGoToWorkspace={onGoToWorkspace}
+                      onApprove={onApprove}
+                      onDisable={onDisable}
+                      onEnable={onEnable}
+                      onReject={onReject}
+                    />
                   </div>
                 </td>
               </tr>
