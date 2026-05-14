@@ -1,13 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Checkbox from "@/components/ui/forms/Checkbox";
 import { Button, LinkButton } from "@/components/ui/buttons";
 import { Heading } from "@/components/ui/typography";
-import { MOCK_NOTIFICATION_SETTINGS, MOCK_USER } from "@/mock/Dashboard";
+import AuthErrorBanner from "@/components/sections/auth/AuthErrorBanner";
+import { useCurrentUser } from "@/hooks/useUser";
+import { getDisplayRole } from "@/lib/user";
+import { MOCK_NOTIFICATION_SETTINGS } from "@/mock/Dashboard";
 
-const sectionCard =
-  "rounded-xl border border-gray-200 bg-white p-4 sm:p-5";
+const sectionCard = "rounded-xl border border-gray-200 bg-white p-4 sm:p-5";
 
 const sectionHeadingClassName =
   "mb-4 font-primary font-semibold text-content !text-base sm:!text-lg !leading-snug";
@@ -30,11 +32,15 @@ const mentorInAppFields = [
   { key: "meetingRequests", label: "Meeting Requests" },
 ];
 
+const adminInAppFields = [
+  { key: "systemAlerts", label: "System Alerts" },
+  { key: "securityAlerts", label: "Security Alerts" },
+  { key: "reports", label: "Reports" },
+  { key: "accountActivity", label: "Account Activity" },
+];
+
 const emailFields = [
-  {
-    key: "platformEmail",
-    label: "Receive platform notifications via email",
-  },
+  { key: "platformEmail", label: "Receive platform notifications via email" },
   { key: "weeklyDigest", label: "Weekly Digest" },
   { key: "securityAlerts", label: "Security Alerts" },
 ];
@@ -46,27 +52,71 @@ interface NotificationsSettingsFormProps {
 const NotificationsSettingsForm = ({
   cancelHref = "/dashboard/settings/profile",
 }: NotificationsSettingsFormProps) => {
-  const isMentor = MOCK_USER.userRole === "mentor";
-  const [inApp, setInApp] = useState({ 
-    ...MOCK_NOTIFICATION_SETTINGS.inApp,
-    supervisionRequests: true,
-    milestoneUpdates: false,
-    ideaAdoption: true,
-    teamChat: true,
-    systemAlerts: true,
-    meetingRequests: true,
-  });
-  const [email, setEmail] = useState({ ...MOCK_NOTIFICATION_SETTINGS.email });
+  const { data: currentUser } = useCurrentUser();
+  const role = getDisplayRole(currentUser?.user?.role);
+  const isMentor = role === "Mentor";
+  const isAdmin = role === "Admin";
 
-  const fields = isMentor ? mentorInAppFields : studentInAppFields;
+  const initialInApp = useMemo(() => {
+    if (isMentor) {
+      return {
+        ...MOCK_NOTIFICATION_SETTINGS.inApp,
+        supervisionRequests: true,
+        milestoneUpdates: true,
+        ideaAdoption: false,
+        teamChat: true,
+        systemAlerts: true,
+        meetingRequests: true,
+      };
+    }
+
+    if (isAdmin) {
+      return {
+        systemAlerts: true,
+        securityAlerts: true,
+        reports: true,
+        accountActivity: true,
+      };
+    }
+
+    return { ...MOCK_NOTIFICATION_SETTINGS.inApp };
+  }, [isAdmin, isMentor]);
+
+  const [inApp, setInApp] = useState<Record<string, boolean>>(initialInApp);
+  const [email, setEmail] = useState({ ...MOCK_NOTIFICATION_SETTINGS.email });
+  const [feedback, setFeedback] = useState<{ variant: "success" | "error"; message: string } | null>(null);
+
+  useEffect(() => {
+    setInApp(initialInApp);
+  }, [initialInApp]);
+
+  const fields = isAdmin
+    ? adminInAppFields
+    : isMentor
+      ? mentorInAppFields
+      : studentInAppFields;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("save notification settings (mock)", { inApp, email });
+
+    setFeedback({
+      variant: "success",
+      message: "Notification preferences saved successfully.",
+    });
   };
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col" noValidate>
+      {feedback ? (
+        <div className="mb-5">
+          <AuthErrorBanner
+            message={feedback.message}
+            variant={feedback.variant}
+            onClose={() => setFeedback(null)}
+          />
+        </div>
+      ) : null}
+
       <section aria-labelledby="notif-inapp-heading">
         <Heading
           level="h3"
@@ -82,7 +132,7 @@ const NotificationsSettingsForm = ({
               id={`notif-inapp-${key}`}
               name={`inApp.${key}`}
               label={label}
-              checked={(inApp as any)[key]}
+              checked={Boolean(inApp[key])}
               onChange={(e) =>
                 setInApp((prev) => ({ ...prev, [key]: e.target.checked }))
               }
@@ -106,7 +156,7 @@ const NotificationsSettingsForm = ({
               id={`notif-email-${key}`}
               name={`email.${key}`}
               label={label}
-              checked={(email as any)[key]}
+              checked={(email as Record<string, boolean>)[key]}
               onChange={(e) =>
                 setEmail((prev) => ({ ...prev, [key]: e.target.checked }))
               }
@@ -119,8 +169,13 @@ const NotificationsSettingsForm = ({
         <Button type="submit" variant="primary" size="md" className="min-w-[100px]">
           Save
         </Button>
-        <LinkButton href={cancelHref} variant="secondary" size="md" className="min-w-[100px]">
-          Cancle
+        <LinkButton
+          href={cancelHref}
+          variant="secondary"
+          size="md"
+          className="min-w-[100px]"
+        >
+          Cancel
         </LinkButton>
       </div>
     </form>

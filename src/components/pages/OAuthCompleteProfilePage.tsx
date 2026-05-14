@@ -17,6 +17,7 @@ import { syncOAuthSession } from "@/lib/oauth";
 import {
   OAUTH_PROVIDER_DESCRIPTIONS,
   OAUTH_PROVIDER_LABELS,
+  OAUTH_UNIVERSITY_OPTIONS,
   type OAuthProvider,
 } from "./oauth.constants";
 
@@ -54,10 +55,31 @@ const OAuthCompleteProfilePage = () => {
     enabled: isSessionReady,
   });
 
-  const universityOptions = universitiesQuery.data?.universities.map((item) => ({
-    value: item.id,
-    label: item.name,
-  })) ?? [];
+  const universityOptions = useMemo(() => {
+    const universities = universitiesQuery.data?.universities ?? [];
+    const seenUniversityIds = new Set<string>();
+    const uniqueOptions: Array<{ value: string; label: string }> = [];
+
+    OAUTH_UNIVERSITY_OPTIONS.forEach((option) => {
+      const match = universities.find((university) => {
+        const universityName = university.name.toLowerCase();
+        const optionName = option.label.toLowerCase();
+
+        return (
+          universityName === optionName ||
+          universityName.includes(optionName) ||
+          optionName.includes(universityName)
+        );
+      });
+
+      if (match && !seenUniversityIds.has(match.id)) {
+        seenUniversityIds.add(match.id);
+        uniqueOptions.push({ value: match.id, label: match.name });
+      }
+    });
+
+    return uniqueOptions;
+  }, [universitiesQuery.data]);
 
   useEffect(() => {
     let isMounted = true;
@@ -236,7 +258,9 @@ const OAuthCompleteProfilePage = () => {
                   options={[
                     {
                       value: "",
-                      label: universitiesQuery.isLoading ? "Loading universities..." : "Select your university",
+                      label: universitiesQuery.isLoading
+                        ? "Loading universities..."
+                        : "Select your university",
                     },
                     ...universityOptions,
                   ]}

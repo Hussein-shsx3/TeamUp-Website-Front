@@ -1,18 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Lock } from "lucide-react";
-import Input from "@/components/ui/forms/Input";
-import Select from "@/components/ui/forms/Select";
 import { Button, LinkButton } from "@/components/ui/buttons";
 import { ChangePasswordModal } from "@/components/ui/modals";
 import { Heading } from "@/components/ui/typography";
-import { Switch } from "@/components/ui/forms";
-import {
-  MOCK_ACCOUNT_SECURITY,
-  PROFILE_VISIBILITY_OPTIONS,
-  MOCK_USER,
-} from "@/mock/Dashboard";
 
 const sectionCard =
   "rounded-xl border border-gray-200 bg-white p-4 sm:p-5";
@@ -27,156 +18,36 @@ interface AccountSecurityFormProps {
 const AccountSecurityForm = ({
   cancelHref = "/dashboard/settings/profile",
 }: AccountSecurityFormProps) => {
-  const isMentor = MOCK_USER.userRole === "mentor";
-  const [studentId, setStudentId] = useState(MOCK_ACCOUNT_SECURITY.studentId);
-  const [password, setPassword] = useState(MOCK_ACCOUNT_SECURITY.password);
-  const [email, setEmail] = useState(MOCK_ACCOUNT_SECURITY.email);
-  const [visibility, setVisibility] = useState<string>(
-    MOCK_ACCOUNT_SECURITY.profileVisibility,
-  );
-  const [acceptingProposals, setAcceptingProposals] = useState(true);
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("save account & security (mock)", {
-      studentId,
-      password,
-      email,
-      visibility,
-      acceptingProposals,
-    });
-  };
-
-  const MENTOR_VISIBILITY_OPTIONS = [
-    { value: "all", label: "All" },
-    { value: "graduation_year", label: "Graduation Year teams only" },
-  ];
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="flex flex-col" noValidate>
-        <section aria-labelledby="account-university-heading">
+      <div className="flex flex-col" aria-labelledby="account-security-heading">
+        <section>
           <Heading
             level="h3"
-            id="account-university-heading"
+            id="account-security-heading"
             className={sectionHeadingClassName}
           >
-            University account data
-          </Heading>
-          <div className="space-y-4">
-            <div className={sectionCard}>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
-                <Input
-                  id="account-student-id"
-                  name="studentId"
-                  label={isMentor ? "Employee ID" : "ID"}
-                  value={studentId}
-                  onChange={(e) => setStudentId(e.target.value)}
-                  autoComplete="username"
-                />
-                <Input
-                  id="account-password"
-                  name="password"
-                  label="Password"
-                  type="text"
-                  autoComplete="current-password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-            </div>
-            {!isMentor && (
-              <div className={sectionCard}>
-                <Input
-                  id="account-email"
-                  name="email"
-                  label="Email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  autoComplete="email"
-                />
-              </div>
-            )}
-          </div>
-        </section>
-
-        <section className="mt-8" aria-labelledby="account-privacy-heading">
-          <Heading
-            level="h3"
-            id="account-privacy-heading"
-            className={sectionHeadingClassName}
-          >
-            Privacy
+            Change Password
           </Heading>
           <div className={sectionCard}>
-            <p className="mb-4 font-primary text-sm font-semibold text-content">
-              Who can see my profile?
+            <p className="font-primary text-sm leading-relaxed text-content-light">
+              Keep your account secure by updating your password whenever needed.
             </p>
-            <Select
-              id="account-profile-visibility"
-              name="profileVisibility"
-              options={isMentor ? MENTOR_VISIBILITY_OPTIONS : PROFILE_VISIBILITY_OPTIONS}
-              value={visibility}
-              onChange={(e) => setVisibility(e.target.value)}
-              aria-label="Who can see my profile"
-            />
           </div>
         </section>
 
-        {isMentor && (
-          <section
-            className="mt-8"
-            aria-labelledby="account-supervision-heading"
-          >
-            <Heading
-              level="h3"
-              id="account-supervision-heading"
-              className={sectionHeadingClassName}
-            >
-              Supervision Status
-            </Heading>
-            <div className={sectionCard}>
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex flex-col gap-1">
-                  <p className="font-primary text-sm font-semibold text-content">
-                    Accepting new project proposals
-                  </p>
-                  <p className="font-primary text-[10px] text-content-light leading-snug">
-                    When turned off, students will be able to see your profile,
-                    but the &apos;Request Supervision&apos; button will be
-                    disabled.
-                  </p>
-                </div>
-                <Switch
-                  id="accepting-proposals-switch"
-                  checked={acceptingProposals}
-                  onChange={setAcceptingProposals}
-                />
-              </div>
-            </div>
-          </section>
-        )}
-
         <div className="mt-8 flex flex-col gap-7">
-          <button
-            type="button"
-            className="inline-flex items-center gap-1.5 self-start font-primary text-sm font-medium
-              text-primary transition-colors hover:text-primary-dark hover:underline"
-            onClick={() => setChangePasswordOpen(true)}
-          >
-            <Lock size={16} aria-hidden="true" className="shrink-0" />
-            Change Password
-          </button>
           <div className="flex flex-wrap gap-3">
             <Button
-              type="submit"
+              type="button"
               variant="primary"
               size="md"
               className="min-w-[100px]"
+              onClick={() => setChangePasswordOpen(true)}
             >
-              Save
+              Change Password
             </Button>
             <LinkButton
               href={cancelHref}
@@ -184,11 +55,11 @@ const AccountSecurityForm = ({
               size="md"
               className="min-w-[100px]"
             >
-              Cancle
+              Cancel
             </LinkButton>
           </div>
         </div>
-      </form>
+      </div>
 
       <ChangePasswordModal
         isOpen={changePasswordOpen}

@@ -1,12 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { Bell, CheckCheck, X } from "lucide-react";
-import {
-  MOCK_NOTIFICATIONS,
-  MockNotification,
-  NotificationType,
-} from "@/mock/Dashboard";
+import { useNotifications } from "@/hooks/useNotification";
+import type { NotificationResponse } from "@/types/notification";
 
 interface NotificationsDropdownProps {
   isOpen: boolean;
@@ -14,20 +12,28 @@ interface NotificationsDropdownProps {
   anchorRef: React.RefObject<HTMLElement | null>;
 }
 
-/* colour per notification type */
-const TYPE_STYLES: Record<NotificationType, string> = {
-  team: "bg-blue-50 text-blue-500",
-  feedback: "bg-purple-50 text-purple-500",
-  task: "bg-amber-50 text-amber-500",
-  system: "bg-gray-100 text-gray-500",
+const TYPE_STYLES: Record<NotificationResponse["type"], string> = {
+  JOIN_REQUEST_RECEIVED: "bg-blue-50 text-blue-500",
+  JOIN_REQUEST_ACCEPTED: "bg-blue-50 text-blue-500",
+  JOIN_REQUEST_REJECTED: "bg-blue-50 text-blue-500",
+  TASK_ASSIGNED: "bg-amber-50 text-amber-500",
+  TASK_COMPLETED: "bg-amber-50 text-amber-500",
+  MILESTONE_STATUS_CHANGED: "bg-purple-50 text-purple-500",
+  MEETING_REMINDER: "bg-sky-50 text-sky-500",
+  MESSAGE_RECEIVED: "bg-sky-50 text-sky-500",
+  PROJECT_APPROVED: "bg-green-50 text-green-500",
+  PROJECT_REJECTED: "bg-red-50 text-red-500",
+  MENTOR_INVITATION_SENT: "bg-violet-50 text-violet-500",
+  MENTOR_INVITATION_ACCEPTED: "bg-violet-50 text-violet-500",
+  MENTOR_INVITATION_REJECTED: "bg-violet-50 text-violet-500",
 };
 
-/* ── shared inner content ── */
 interface PanelContentProps {
-  notifications: MockNotification[];
+  notifications: NotificationResponse[];
   unreadCount: number;
   onMarkAllRead: () => void;
-  onMarkOneRead: (id: number) => void;
+  onMarkOneRead: (id: string) => void;
+  onDeleteOne: (id: string) => void;
   onClose: () => void;
   showCloseButton?: boolean;
 }
@@ -37,22 +43,19 @@ const PanelContent = ({
   unreadCount,
   onMarkAllRead,
   onMarkOneRead,
+  onDeleteOne,
   onClose,
   showCloseButton = false,
 }: PanelContentProps) => (
   <>
-    {/* Header */}
-    <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 flex-shrink-0">
+    <div className="flex flex-shrink-0 items-center justify-between border-b border-gray-100 px-4 py-3">
       <div className="flex items-center gap-2">
         <Bell size={16} className="text-primary" aria-hidden="true" />
         <span className="font-primary text-sm font-semibold text-content">
           Notifications
         </span>
         {unreadCount > 0 && (
-          <span
-            className="inline-flex items-center justify-center w-5 h-5 rounded-full
-            bg-primary text-white font-primary text-[10px] font-bold leading-none"
-          >
+          <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold leading-none text-white font-primary">
             {unreadCount}
           </span>
         )}
@@ -62,8 +65,7 @@ const PanelContent = ({
           <button
             type="button"
             onClick={onMarkAllRead}
-            className="flex items-center gap-1 font-primary text-xs text-primary
-              hover:text-primary-dark transition-colors duration-150"
+            className="flex items-center gap-1 font-primary text-xs text-primary transition-colors duration-150 hover:text-primary-dark"
           >
             <CheckCheck size={13} aria-hidden="true" />
             <span>Mark all read</span>
@@ -74,9 +76,7 @@ const PanelContent = ({
             type="button"
             onClick={onClose}
             aria-label="Close notifications"
-            className="w-7 h-7 flex items-center justify-center rounded-full
-              text-content-muted hover:text-content hover:bg-gray-100
-              transition-colors duration-150 ml-1"
+            className="ml-1 flex h-7 w-7 items-center justify-center rounded-full text-content-muted transition-colors duration-150 hover:bg-gray-100 hover:text-content"
           >
             <X size={15} aria-hidden="true" />
           </button>
@@ -84,66 +84,86 @@ const PanelContent = ({
       </div>
     </div>
 
-    {/* List */}
-    <ul className="overflow-y-auto divide-y divide-gray-50 flex-1">
-      {notifications.map((notif) => (
-        <li key={notif.id}>
-          <button
-            type="button"
-            onClick={() => onMarkOneRead(notif.id)}
-            className={`w-full text-left flex items-start gap-3 px-4 py-3
-              transition-colors duration-150
-              ${notif.read ? "bg-white hover:bg-gray-50" : "bg-primary/[0.03] hover:bg-primary/[0.06]"}`}
-          >
-            {/* emoji badge */}
-            <span
-              className={`flex-shrink-0 w-9 h-9 rounded-full flex items-center
-              justify-center text-base ${TYPE_STYLES[notif.type]}`}
-              aria-hidden="true"
-            >
-              {notif.emoji}
-            </span>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-start justify-between gap-2">
-                <p
-                  className={`font-primary text-xs font-semibold leading-snug
-                  ${notif.read ? "text-content" : "text-primary"}`}
-                >
-                  {notif.title}
-                </p>
-                {!notif.read && (
-                  <span className="flex-shrink-0 mt-1 w-2 h-2 rounded-full bg-primary" />
-                )}
-              </div>
-              <p
-                className="font-primary text-[11px] text-content-light
-                leading-relaxed mt-0.5 line-clamp-2"
-              >
-                {notif.body}
-              </p>
-              <p className="font-primary text-[10px] text-content-muted mt-1">
-                {notif.time}
-              </p>
-            </div>
-          </button>
+    <ul className="flex-1 divide-y divide-gray-50 overflow-y-auto">
+      {notifications.length === 0 ? (
+        <li className="flex flex-col items-center justify-center gap-3 px-4 py-10 text-center">
+          <Bell size={28} className="text-content-muted" aria-hidden="true" />
+          <p className="font-primary text-sm font-semibold text-content">
+            No notifications yet.
+          </p>
+          <p className="font-primary text-xs text-content-light">
+            New updates will appear here.
+          </p>
         </li>
-      ))}
+      ) : (
+        notifications.map((notification) => (
+          <li key={notification.id}>
+            <div
+              className={`flex items-start gap-3 px-4 py-3 transition-colors duration-150 ${notification.isRead ? "bg-white hover:bg-gray-50" : "bg-primary/[0.03] hover:bg-primary/[0.06]"}`}
+            >
+              <span
+                className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-base ${TYPE_STYLES[notification.type]}`}
+                aria-hidden="true"
+              >
+                •
+              </span>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-start justify-between gap-2">
+                  <p
+                    className={`font-primary text-xs font-semibold leading-snug ${notification.isRead ? "text-content" : "text-primary"}`}
+                  >
+                    {notification.title}
+                  </p>
+                  {!notification.isRead && (
+                    <span className="mt-1 h-2 w-2 flex-shrink-0 rounded-full bg-primary" />
+                  )}
+                </div>
+                <p className="mt-0.5 line-clamp-2 font-primary text-[11px] leading-relaxed text-content-light">
+                  {notification.content}
+                </p>
+                <p className="mt-1 font-primary text-[10px] text-content-muted">
+                  {new Intl.DateTimeFormat("en", {
+                    month: "short",
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "2-digit",
+                  }).format(new Date(notification.createdAt))}
+                </p>
+                <div className="mt-2 flex gap-3">
+                  {!notification.isRead ? (
+                    <button
+                      type="button"
+                      onClick={() => onMarkOneRead(notification.id)}
+                      className="font-primary text-[11px] text-primary transition-colors hover:text-primary-dark"
+                    >
+                      Mark read
+                    </button>
+                  ) : null}
+                  <button
+                    type="button"
+                    onClick={() => onDeleteOne(notification.id)}
+                    className="font-primary text-[11px] text-content-muted transition-colors hover:text-error"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          </li>
+        ))
+      )}
     </ul>
 
-    {/* Footer */}
-    <div className="px-4 py-2.5 border-t border-gray-100 bg-gray-50/60 flex-shrink-0">
-      <button
-        type="button"
-        className="w-full font-primary text-xs text-primary font-medium
-          hover:text-primary-dark transition-colors duration-150 text-center"
+    <div className="flex-shrink-0 border-t border-gray-100 bg-gray-50/60 px-4 py-2.5">
+      <Link
+        href="/dashboard/settings/notifications"
+        className="block w-full text-center font-primary text-xs font-medium text-primary transition-colors duration-150 hover:text-primary-dark"
       >
         View all notifications
-      </button>
+      </Link>
     </div>
   </>
 );
-
-/* ─────────────────────────── main component */
 
 const NotificationsDropdown = ({
   isOpen,
@@ -151,13 +171,17 @@ const NotificationsDropdown = ({
   anchorRef,
 }: NotificationsDropdownProps) => {
   const panelRef = useRef<HTMLDivElement>(null);
-  const [notifications, setNotifications] =
-    useState<MockNotification[]>(MOCK_NOTIFICATIONS);
   const [sheetRendered, setSheetRendered] = useState(false);
+  const {
+    notificationsQuery,
+    markAllAsReadMutation,
+    markAsReadMutation,
+    deleteNotificationMutation,
+  } = useNotifications();
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const notifications = notificationsQuery.data?.notifications ?? [];
+  const unreadCount = notifications.filter((item) => !item.isRead).length;
 
-  /* close on outside click — desktop only */
   useEffect(() => {
     if (!isOpen) return;
     const handler = (e: MouseEvent) => {
@@ -174,7 +198,6 @@ const NotificationsDropdown = ({
     return () => document.removeEventListener("mousedown", handler);
   }, [isOpen, onClose, anchorRef]);
 
-  /* Escape to close */
   useEffect(() => {
     if (!isOpen) return;
     const handler = (e: KeyboardEvent) => {
@@ -184,7 +207,6 @@ const NotificationsDropdown = ({
     return () => window.removeEventListener("keydown", handler);
   }, [isOpen, onClose]);
 
-  /* body lock + sheet animation on mobile */
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -200,13 +222,17 @@ const NotificationsDropdown = ({
     };
   }, [isOpen]);
 
-  const markAllRead = () =>
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+  const markAllRead = async () => {
+    await markAllAsReadMutation.mutateAsync();
+  };
 
-  const markOneRead = (id: number) =>
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
-    );
+  const markOneRead = async (id: string) => {
+    await markAsReadMutation.mutateAsync(id);
+  };
+
+  const deleteOne = async (id: string) => {
+    await deleteNotificationMutation.mutateAsync(id);
+  };
 
   if (!isOpen) return null;
 
@@ -215,52 +241,34 @@ const NotificationsDropdown = ({
     unreadCount,
     onMarkAllRead: markAllRead,
     onMarkOneRead: markOneRead,
+    onDeleteOne: deleteOne,
     onClose,
   };
 
   return (
     <>
-      {/* ════ DESKTOP: absolute dropdown (md and up) ════ */}
       <div
         ref={panelRef}
         aria-label="Notifications"
-        className="hidden md:flex flex-col absolute right-0 top-[calc(100%+8px)] z-50
-          w-[340px] max-h-[480px] bg-white rounded-xl
-          shadow-[0_8px_32px_rgba(0,0,0,0.14)]
-          border border-gray-100 overflow-hidden
-          animate-dropdown-in"
+        className="hidden max-h-[480px] flex-col overflow-hidden rounded-xl border border-gray-100 bg-white shadow-[0_8px_32px_rgba(0,0,0,0.14)] animate-dropdown-in md:absolute md:right-0 md:top-[calc(100%+8px)] md:z-50 md:flex md:w-[340px]"
       >
         <PanelContent {...sharedProps} />
       </div>
 
-      {/* ════ MOBILE: full-screen bottom sheet (below md) ════ */}
-      <div className="md:hidden fixed inset-0 z-50">
-        {/* backdrop */}
+      <div className="fixed inset-0 z-50 md:hidden">
         <div
-          className={`absolute inset-0 bg-black/40 backdrop-blur-[2px]
-            transition-opacity duration-300
-            ${sheetRendered ? "opacity-100" : "opacity-0"}`}
+          className={`absolute inset-0 bg-black/40 backdrop-blur-[2px] transition-opacity duration-300 ${sheetRendered ? "opacity-100" : "opacity-0"}`}
           onClick={onClose}
         />
 
-        {/* sheet panel — slides up from bottom */}
         <div
-          className={`absolute bottom-0 left-0 right-0
-            bg-white rounded-t-3xl flex flex-col
-            shadow-[0_-8px_32px_rgba(0,0,0,0.14)]
-            max-h-[80vh]
-            transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]
-            ${sheetRendered ? "translate-y-0" : "translate-y-full"}`}
+          className={`absolute bottom-0 left-0 right-0 flex max-h-[80vh] flex-col rounded-t-3xl bg-white shadow-[0_-8px_32px_rgba(0,0,0,0.14)] transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${sheetRendered ? "translate-y-0" : "translate-y-full"}`}
         >
-          {/* drag handle */}
-          <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
-            <div
-              className="w-10 h-1 rounded-full bg-gray-200"
-              aria-hidden="true"
-            />
+          <div className="flex flex-shrink-0 justify-center pb-1 pt-3">
+            <div className="h-1 w-10 rounded-full bg-gray-200" aria-hidden="true" />
           </div>
 
-          <div className="flex flex-col overflow-hidden flex-1">
+          <div className="flex flex-1 flex-col overflow-hidden">
             <PanelContent {...sharedProps} showCloseButton />
           </div>
         </div>

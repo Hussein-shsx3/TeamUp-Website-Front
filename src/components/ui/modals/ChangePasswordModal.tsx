@@ -5,6 +5,8 @@ import Modal from "./Modal";
 import PasswordInput from "@/components/ui/forms/PasswordInput";
 import { Button } from "@/components/ui/buttons";
 import { Heading } from "@/components/ui/typography";
+import { useChangePassword } from "@/hooks/useAuth";
+import AuthErrorBanner from "@/components/sections/auth/AuthErrorBanner";
 
 export interface ChangePasswordModalProps {
   isOpen: boolean;
@@ -15,23 +17,54 @@ const ChangePasswordModal = ({ isOpen, onClose }: ChangePasswordModalProps) => {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [formError, setFormError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const changePasswordMutation = useChangePassword();
 
   useEffect(() => {
     if (!isOpen) {
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
+      setFormError("");
+      setSuccessMessage("");
     }
   }, [isOpen]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("update password (mock)", {
-      currentPassword,
-      newPassword,
-      confirmPassword,
-    });
-    onClose();
+
+    if (successMessage) {
+      onClose();
+      return;
+    }
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      setFormError("All password fields are required.");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setFormError("New password and confirmation do not match.");
+      return;
+    }
+
+    setFormError("");
+    setSuccessMessage("");
+
+    try {
+      await changePasswordMutation.mutateAsync({
+        currentPassword,
+        newPassword,
+      });
+
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setSuccessMessage("Password updated successfully.");
+    } catch (error) {
+      setFormError(error instanceof Error ? error.message : "Failed to update password.");
+    }
   };
 
   return (
@@ -49,6 +82,19 @@ const ChangePasswordModal = ({ isOpen, onClose }: ChangePasswordModalProps) => {
           Change Password
         </Heading>
 
+        {(formError || successMessage) && (
+          <div className="mb-6">
+            <AuthErrorBanner
+              message={formError || successMessage}
+              variant={successMessage ? "success" : "error"}
+              onClose={() => {
+                setFormError("");
+                setSuccessMessage("");
+              }}
+            />
+          </div>
+        )}
+
         <div className="flex flex-col gap-6">
           <PasswordInput
             id="change-password-current"
@@ -58,6 +104,7 @@ const ChangePasswordModal = ({ isOpen, onClose }: ChangePasswordModalProps) => {
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
             autoComplete="current-password"
+            disabled={changePasswordMutation.isPending || Boolean(successMessage)}
           />
           <PasswordInput
             id="change-password-new"
@@ -67,6 +114,7 @@ const ChangePasswordModal = ({ isOpen, onClose }: ChangePasswordModalProps) => {
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             autoComplete="new-password"
+            disabled={changePasswordMutation.isPending || Boolean(successMessage)}
           />
           <PasswordInput
             id="change-password-confirm"
@@ -76,6 +124,7 @@ const ChangePasswordModal = ({ isOpen, onClose }: ChangePasswordModalProps) => {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             autoComplete="new-password"
+            disabled={changePasswordMutation.isPending || Boolean(successMessage)}
           />
         </div>
 
@@ -84,8 +133,13 @@ const ChangePasswordModal = ({ isOpen, onClose }: ChangePasswordModalProps) => {
           variant="primary"
           size="md"
           className="mt-10 w-full py-4 text-lg"
+          disabled={changePasswordMutation.isPending}
         >
-          Update Password
+          {successMessage
+            ? "Close"
+            : changePasswordMutation.isPending
+              ? "Updating..."
+              : "Update Password"}
         </Button>
       </form>
     </Modal>

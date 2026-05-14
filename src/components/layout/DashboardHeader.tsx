@@ -31,6 +31,7 @@ import {
 import { Container } from "@/components/layout";
 import { useLogout } from "@/hooks/useAuth";
 import { useCurrentUser } from "@/hooks/useUser";
+import { useNotifications } from "@/hooks/useNotification";
 import { getAvatarSrc, getDisplayRole, getFullName } from "@/lib/user";
 import {
   MOCK_USER,
@@ -44,6 +45,7 @@ const DashboardHeader = () => {
   const router = useRouter();
   const { logout } = useLogout();
   const { data: currentUser } = useCurrentUser();
+  const { statsQuery } = useNotifications();
 
   /* ── search ── */
   const [searchOpen, setSearchOpen] = useState(false);
@@ -79,8 +81,7 @@ const DashboardHeader = () => {
   const [isRendered, setIsRendered] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
 
-  /* ── notification mock ── */
-  const [hasNotification] = useState(true);
+  const hasNotification = (statsQuery.data?.unread ?? 0) > 0;
 
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
   const [reportIssueModalOpen, setReportIssueModalOpen] = useState(false);

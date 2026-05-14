@@ -16,6 +16,12 @@ export const OAUTH_UNIVERSITY_OPTIONS = [
   "Gaza University",
   "Palestine Technical College - Deir al-Balah",
   "Al-Quds Open University - Gaza Branch",
+  "Palestine University - Gaza",
+  "Israa University",
+  "University of Palestine",
+  "American University of Gaza",
+  "University of Science and Technology - Gaza",
+  "Aqsa University",
 ].map((university) => ({ value: university, label: university }));
 
 export const OAUTH_PROVIDER_LABELS: Record<OAuthProvider, string> = {

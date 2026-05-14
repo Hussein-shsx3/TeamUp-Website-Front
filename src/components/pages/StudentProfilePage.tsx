@@ -1,8 +1,25 @@
-import { MOCK_STUDENT_PROFILE } from "@/mock/Dashboard";
+"use client";
+
 import { Breadcrumb } from "@/components/ui/navigation";
 import { ProfileSection } from "@/components/sections/dashboard";
+import { useCurrentUser } from "@/hooks/useUser";
+import { useUniversityName } from "@/hooks/useInstitution";
+import { getAvatarSrc, getDisplayRole, getFullName } from "@/lib/user";
 
 const StudentProfilePage = () => {
+  const { data: currentUser } = useCurrentUser();
+  const displayUser = currentUser?.user ?? null;
+  const academicProfile = displayUser?.academicProfile ?? null;
+  const universityLookup = useUniversityName(displayUser?.universityId ?? null);
+  const displayRole = displayUser ? getDisplayRole(displayUser.role) : "User";
+  const displayName = displayUser
+    ? getFullName(displayUser.firstName, displayUser.lastName) || displayUser.username
+    : "Student Profile";
+  const bio = displayUser?.bio ?? "";
+  const skills = academicProfile?.skills ?? [];
+  const university = universityLookup.isLoading && displayUser?.universityId ? "Loading..." : universityLookup.universityName;
+  const major = academicProfile?.major ?? "";
+
   return (
     <div>
       <Breadcrumb
@@ -12,14 +29,14 @@ const StudentProfilePage = () => {
         ]}
       />
       <ProfileSection
-        name={MOCK_STUDENT_PROFILE.name}
-        displayRole={MOCK_STUDENT_PROFILE.displayRole}
-        avatar={MOCK_STUDENT_PROFILE.avatar || "/images/user.jpg"}
-        skills={MOCK_STUDENT_PROFILE.skills}
-        university={MOCK_STUDENT_PROFILE.university}
-        major={MOCK_STUDENT_PROFILE.major}
-        bio={MOCK_STUDENT_PROFILE.bio}
-        isOwnProfile={false}
+        name={displayName}
+        displayRole={displayRole}
+        avatar={getAvatarSrc(displayUser?.profilePictureUrl)}
+        skills={skills}
+        university={university}
+        major={major}
+        bio={bio}
+        isOwnProfile
       />
     </div>
   );
