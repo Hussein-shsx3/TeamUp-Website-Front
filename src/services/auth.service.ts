@@ -103,5 +103,14 @@ export const authService = {
     return data;
   },
 
+  async deleteAccount() {
+    const { data } = await api.delete<MessageResponse>(
+      `${AUTH_BASE_PATH}/delete-account`,
+    );
+
+    clearToken();
+    return data;
+  },
+
   clearToken,
 };

@@ -5,23 +5,16 @@ import { AlertTriangle } from "lucide-react";
 import { DeleteAccountModal } from "@/components/ui/modals";
 
 export interface DeleteAccountButtonProps {
-  onDelete?: () => void;
   className?: string;
   /** Wider touch target + banner styling for mobile bottom strip. */
   variant?: "default" | "banner";
 }
 
 const DeleteAccountButton = ({
-  onDelete,
   className = "",
   variant = "default",
 }: DeleteAccountButtonProps) => {
   const [modalOpen, setModalOpen] = useState(false);
-
-  const handleConfirm = () => {
-    if (onDelete) onDelete();
-    else console.log("delete account (mock)");
-  };
 
   const base =
     "flex w-full items-center gap-3 rounded-xl text-left font-primary text-sm font-medium text-error transition-colors duration-150 hover:bg-error/10";
@@ -45,7 +38,6 @@ const DeleteAccountButton = ({
       <DeleteAccountModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
-        onConfirm={handleConfirm}
       />
     </>
   );
