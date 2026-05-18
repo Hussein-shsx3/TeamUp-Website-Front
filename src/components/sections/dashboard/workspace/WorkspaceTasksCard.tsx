@@ -2,21 +2,21 @@
 
 import { useEffect, useRef, useState } from "react";
 import { MoreVertical, Pencil, Trash2 } from "lucide-react";
-import type { MockWorkspaceTask } from "@/mock/TeamWorkspace";
 import { DeleteTaskModal } from "@/components/ui/modals";
 import WorkspaceCard from "./WorkspaceCard";
 import DashboardTaskRow from "../shared/DashboardTaskRow";
 import { Button, IconButton } from "@/components/ui/buttons";
+import type { WorkspaceTaskItem } from "@/hooks/useTeam";
 
 interface WorkspaceTasksCardProps {
-  initialTasks: MockWorkspaceTask[];
+  initialTasks: WorkspaceTaskItem[];
   isLead: boolean;
 }
 
 const WorkspaceTasksCard = ({ initialTasks, isLead }: WorkspaceTasksCardProps) => {
   const [tasks, setTasks] = useState(initialTasks);
-  const [menuId, setMenuId] = useState<number | null>(null);
-  const [taskToDelete, setTaskToDelete] = useState<MockWorkspaceTask | null>(null);
+  const [menuId, setMenuId] = useState<string | null>(null);
+  const [taskToDelete, setTaskToDelete] = useState<WorkspaceTaskItem | null>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -27,7 +27,11 @@ const WorkspaceTasksCard = ({ initialTasks, isLead }: WorkspaceTasksCardProps) =
     return () => document.removeEventListener("mousedown", close);
   }, []);
 
-  const toggle = (id: number) =>
+  useEffect(() => {
+    setTasks(initialTasks);
+  }, [initialTasks]);
+
+  const toggle = (id: string) =>
     setTasks((prev) =>
       prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t)),
     );

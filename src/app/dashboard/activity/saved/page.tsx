@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
 import { Breadcrumb } from "@/components/ui/navigation";
+import {
+  ActivityShell,
+  ActivityToolbar,
+} from "@/components/sections/dashboard";
+import ActivitySavedView from "@/components/sections/dashboard/activity/ActivitySavedView";
 
 export const metadata: Metadata = {
   title: "TeamUp — My Saved Projects",
 };
-import {
-  ActivityShell,
-  ActivityToolbar,
-  ActivityProjectCard,
-} from "@/components/sections/dashboard";
-import { MOCK_SAVED_ACTIVITY_ITEMS } from "@/mock/Activity";
 
 const ActivitySavedPage = () => {
   return (
@@ -23,11 +22,7 @@ const ActivitySavedPage = () => {
       <ActivityShell>
         <div className="flex min-h-0 flex-col p-4 sm:p-6 md:p-8">
           <ActivityToolbar />
-          <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5 lg:gap-6">
-            {MOCK_SAVED_ACTIVITY_ITEMS.map((item) => (
-              <ActivityProjectCard key={item.id} variant="saved" item={item} />
-            ))}
-          </div>
+          <ActivitySavedView />
         </div>
       </ActivityShell>
     </div>

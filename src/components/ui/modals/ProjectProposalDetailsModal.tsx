@@ -67,7 +67,7 @@ export function ProjectProposalDetailsModal({
                 >
                   <div className="relative h-9 w-9 overflow-hidden rounded-full ring-2 ring-white shadow-sm">
                     <Image
-                      src="/images/user.jpg"
+                      src="/images/user.png"
                       alt={member}
                       fill
                       unoptimized

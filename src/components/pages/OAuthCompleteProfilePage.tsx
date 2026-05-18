@@ -8,11 +8,10 @@ import {
   CheckCircle2,
   CircleUserRound,
 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
 import { Heading } from "@/components/ui/typography";
 import { Input, Select, SubmitButton, TagInput } from "@/components/ui/forms";
 import { useUpdateCurrentUser } from "@/hooks/useUser";
-import { institutionService } from "@/services/institution.service";
+import { useUniversities } from "@/hooks/useInstitution";
 import { syncOAuthSession } from "@/lib/oauth";
 import {
   OAUTH_PROVIDER_DESCRIPTIONS,
@@ -49,11 +48,7 @@ const OAuthCompleteProfilePage = () => {
   const [saveError, setSaveError] = useState("");
   const updateCurrentUser = useUpdateCurrentUser();
 
-  const universitiesQuery = useQuery({
-    queryKey: ["institutions", "universities"],
-    queryFn: () => institutionService.getUniversities(),
-    enabled: isSessionReady,
-  });
+  const universitiesQuery = useUniversities();
 
   const universityOptions = useMemo(() => {
     const universities = universitiesQuery.data?.universities ?? [];

@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { X } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
 import { Input, PasswordInput } from "@/components/ui/forms";
 import Select from "@/components/ui/forms/Select";
 import { Heading } from "@/components/ui/typography";
@@ -13,7 +12,11 @@ import {
   AuthErrorBanner,
 } from "@/components/sections/auth";
 import { useSignUp } from "@/hooks/useAuth";
-import { institutionService } from "@/services/institution.service";
+import {
+  useColleges,
+  useDepartments,
+  useUniversities,
+} from "@/hooks/useInstitution";
 import { getApiErrorMessage } from "@/lib/apiError";
 
 /* ── Static data ── */
@@ -58,22 +61,9 @@ const SignUpForm = ({ onSwitchToSignIn }: SignUpFormProps) => {
   const [successMessage, setSuccessMessage] = useState("");
   const signUpMutation = useSignUp();
 
-  const universitiesQuery = useQuery({
-    queryKey: ["institutions", "universities"],
-    queryFn: () => institutionService.getUniversities(),
-  });
-
-  const collegesQuery = useQuery({
-    queryKey: ["institutions", "colleges", universityId],
-    queryFn: () => institutionService.getColleges(universityId),
-    enabled: Boolean(universityId),
-  });
-
-  const departmentsQuery = useQuery({
-    queryKey: ["institutions", "departments", collegeId],
-    queryFn: () => institutionService.getDepartments(collegeId),
-    enabled: Boolean(collegeId),
-  });
+  const universitiesQuery = useUniversities();
+  const collegesQuery = useColleges(universityId);
+  const departmentsQuery = useDepartments(collegeId);
 
   const universityOptions = useMemo(
     () => universitiesQuery.data?.universities.map((item) => ({ value: item.id, label: item.name })) ?? [],

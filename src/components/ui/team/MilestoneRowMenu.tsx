@@ -6,7 +6,7 @@ import { Eye, MoreVertical, Trash2 } from "lucide-react";
 import { IconButton } from "@/components/ui/buttons";
 
 export interface MilestoneRowMenuProps {
-  milestoneId: number;
+  milestoneId: string | number;
   /** Used for accessibility and menu labels. */
   title: string;
   /** Override “Profile” link (default includes milestone id). */

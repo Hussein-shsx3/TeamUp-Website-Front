@@ -7,18 +7,25 @@ import { Button } from "@/components/ui/buttons";
 import { Heading } from "@/components/ui/typography";
 import { TeamMemberRow } from "@/components/ui/team";
 import JoinTeamModal from "@/components/sections/dashboard/findTeam/JoinTeamModal";
-import { FIND_TEAM_PROJECTS } from "@/mock/FindTeam";
+import { useFindTeamProject } from "@/hooks/useFindTeam";
 
 interface ProjectDetailPageProps {
   id: string;
 }
 
 const ProjectDetailPage = ({ id }: ProjectDetailPageProps) => {
-  const project = FIND_TEAM_PROJECTS.find((p) => p.id === Number(id));
+  const { project, projectQuery, teamDetailsQuery } = useFindTeamProject(id);
 
   const [joinOpen, setJoinOpen] = useState(false);
 
-  if (!project) return notFound();
+  if (projectQuery.isError || teamDetailsQuery.isError) return notFound();
+  if (projectQuery.isLoading || teamDetailsQuery.isLoading || !project) {
+    return (
+      <div className="rounded-lg border border-gray-100 bg-white p-6 font-primary text-sm text-content-light shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
+        Loading project details...
+      </div>
+    );
+  }
 
   const {
     name,
@@ -99,7 +106,7 @@ const ProjectDetailPage = ({ id }: ProjectDetailPageProps) => {
                   <div className="flex items-center gap-3">
                     <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full ring-2 ring-gray-100">
                       <Image
-                        src="/images/user.jpg"
+                        src="/images/user.png"
                         alt={mentorName}
                         fill
                         unoptimized
@@ -230,6 +237,8 @@ const ProjectDetailPage = ({ id }: ProjectDetailPageProps) => {
         isOpen={joinOpen}
         onClose={() => setJoinOpen(false)}
         projectName={name}
+        projectId={id}
+        teamId={project.teamId}
       />
     </>
   );

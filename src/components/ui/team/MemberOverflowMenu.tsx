@@ -6,7 +6,7 @@ import { Eye, MoreVertical, Trash2 } from "lucide-react";
 import { IconButton } from "@/components/ui/buttons";
 
 export interface MemberOverflowMenuProps {
-  memberId: number;
+  memberId: string | number;
   memberName: string;
   profileHref?: string;
   onDelete: () => void;

@@ -55,7 +55,7 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
 export const ADMIN_PROFILE = {
   name: "Wafaa Amjad",
   role: "UI/UX Designer",
-  avatar: "/images/user.jpg",
+  avatar: "/images/user.png",
 };
 
 export const ADMIN_STATS: AdminStatCard[] = [

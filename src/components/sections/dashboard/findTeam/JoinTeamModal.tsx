@@ -5,22 +5,33 @@ import { Button } from "@/components/ui/buttons";
 import { Select, TagInput, Input, Textarea } from "@/components/ui/forms";
 import { FIND_TEAM_ROLE_OPTIONS } from "@/mock/FindTeam";
 import { Heading } from "@/components/ui/typography";
+import { useCreateJoinRequest } from "@/hooks/useJoinRequest";
+import { teamService } from "@/services/team.service";
 
 export interface JoinTeamModalProps {
   isOpen: boolean;
   onClose: () => void;
   projectName: string;
+  projectId?: string;
+  teamId?: string;
 }
 
 const JoinTeamModal = ({
   isOpen,
   onClose,
   projectName,
+  teamId,
+  projectId,
 }: JoinTeamModalProps) => {
   const [role, setRole] = useState("");
   const [skills, setSkills] = useState<string[]>([]);
   const [portfolio, setPortfolio] = useState("");
   const [coverLetter, setCoverLetter] = useState("");
+  const [teamLookupError, setTeamLookupError] = useState("");
+  const [isResolvingTeam, setIsResolvingTeam] = useState(false);
+  const createJoinRequest = useCreateJoinRequest();
+
+  const isSubmitting = createJoinRequest.isPending;
 
   /* Reset form when modal closes */
   useEffect(() => {
@@ -29,18 +40,53 @@ const JoinTeamModal = ({
       setSkills([]);
       setPortfolio("");
       setCoverLetter("");
+      setTeamLookupError("");
+      setIsResolvingTeam(false);
+      createJoinRequest.reset();
     }
   }, [isOpen]);
 
-  const handleSend = () => {
-    console.log("join request (mock)", {
-      projectName,
-      role,
-      skills,
-      portfolio,
-      coverLetter,
-    });
-    onClose();
+  const handleSend = async () => {
+    setTeamLookupError("");
+
+    let finalTeamId = teamId;
+
+    try {
+      if (!finalTeamId && projectId) {
+        setIsResolvingTeam(true);
+        const teamsResponse = await teamService.getTeams({ projectId });
+        finalTeamId = teamsResponse.teams?.[0]?.id ?? "";
+      }
+
+      if (!finalTeamId) {
+        setTeamLookupError("No joinable team is available for this project yet.");
+        return;
+      }
+
+      const submittedCoverLetter = [
+        coverLetter.trim(),
+        role ? `Preferred role: ${role}` : "",
+        skills.length > 0 ? `Skills: ${skills.join(", ")}` : "",
+        portfolio ? `Portfolio: ${portfolio}` : "",
+      ]
+        .filter(Boolean)
+        .join("\n\n");
+
+      await createJoinRequest.mutateAsync({
+        teamId: finalTeamId,
+        coverLetter: submittedCoverLetter || undefined,
+      });
+
+      onClose();
+    } catch (error) {
+      setTeamLookupError(
+        error instanceof Error && error.message
+          ? error.message
+          : "Could not submit the join request.",
+      );
+    } finally {
+      setIsResolvingTeam(false);
+    }
   };
 
   return (
@@ -96,6 +142,18 @@ const JoinTeamModal = ({
             onChange={(e) => setCoverLetter(e.target.value)}
             placeholder=""
           />
+
+          {teamLookupError ? (
+            <p className="font-primary text-sm text-red-600">
+              {teamLookupError}
+            </p>
+          ) : null}
+
+          {createJoinRequest.error ? (
+            <p className="font-primary text-sm text-red-600">
+              {(createJoinRequest.error as Error).message}
+            </p>
+          ) : null}
         </div>
 
         {/* Actions */}
@@ -106,6 +164,8 @@ const JoinTeamModal = ({
             size="md"
             className="flex-1 justify-center"
             onClick={handleSend}
+            isLoading={isSubmitting || isResolvingTeam}
+            loadingLabel={isResolvingTeam ? "Loading team..." : "Sending..."}
           >
             Send Request
           </Button>
@@ -115,6 +175,7 @@ const JoinTeamModal = ({
             size="md"
             className="flex-1 justify-center"
             onClick={onClose}
+            disabled={isSubmitting}
           >
             Cancel
           </Button>

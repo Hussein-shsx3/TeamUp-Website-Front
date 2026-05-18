@@ -1,21 +1,29 @@
 "use client";
 
-import { useState } from "react";
-import { MOCK_TASKS, MOCK_USER } from "@/mock/Dashboard";
+import { useEffect, useState } from "react";
+import { MOCK_USER } from "@/mock/Dashboard";
 import { Heading } from "@/components/ui/typography";
 import { Button, LinkButton } from "@/components/ui/buttons";
 import DashboardTaskRow from "../shared/DashboardTaskRow";
+import { useWorkspaceTasks } from "@/hooks/useTeam";
 
 const CAN_MANAGE = ["team_admin", "mentor"] as const;
 
 const UpcomingTasks = () => {
-  const [tasks, setTasks] = useState(MOCK_TASKS);
+  const { workspaceTasks, workspaceTasksQuery } = useWorkspaceTasks();
+  const [tasks, setTasks] = useState(workspaceTasks);
 
   const canManage = CAN_MANAGE.includes(
     MOCK_USER.userRole as (typeof CAN_MANAGE)[number],
   );
 
-  const toggle = (id: number) =>
+  useEffect(() => {
+    if (tasks.length === 0 && workspaceTasks.length > 0) {
+      setTasks(workspaceTasks);
+    }
+  }, [tasks.length, workspaceTasks]);
+
+  const toggle = (id: string) =>
     setTasks((prev) =>
       prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t)),
     );

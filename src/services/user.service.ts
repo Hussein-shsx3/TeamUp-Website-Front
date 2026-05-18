@@ -2,13 +2,24 @@
 
 import api from "@/lib/axios";
 import type { MessageResponse } from "@/types/auth";
-import type { SingleUserResponse, UpdateMePayload } from "@/types/user";
+import type {
+  ProfileCompletionResponse,
+  SingleUserResponse,
+  UpdateMePayload,
+} from "@/types/user";
 
 const USER_BASE_PATH = "/users";
 
 export const userService = {
   async getMe() {
     const { data } = await api.get<SingleUserResponse>(`${USER_BASE_PATH}/me`);
+    return data;
+  },
+
+  async getProfileCompletion() {
+    const { data } = await api.get<ProfileCompletionResponse>(
+      `${USER_BASE_PATH}/me/completion-score`,
+    );
     return data;
   },
 

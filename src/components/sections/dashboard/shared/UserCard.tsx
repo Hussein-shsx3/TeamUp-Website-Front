@@ -1,13 +1,26 @@
+"use client";
+
 import Image from "next/image";
-import { MOCK_USER } from "@/mock/Dashboard";
 import { ProgressBar } from "@/components/ui/feedback";
 import { LinkButton } from "@/components/ui/buttons";
+import { getAvatarSrc, getDisplayRole, getFullName } from "@/lib/user";
+import { useCurrentUser, useProfileCompletion } from "@/hooks/useUser";
 
 interface UserCardProps {
   showProgress?: boolean;
 }
 
 const UserCard = ({ showProgress = false }: UserCardProps) => {
+  const { data: currentUser } = useCurrentUser();
+  const { data: profileCompletion } = useProfileCompletion();
+
+  const user = currentUser?.user;
+  const name = getFullName(user?.firstName, user?.lastName) || user?.username || "User";
+  const role = getDisplayRole(user?.role);
+  const avatar = getAvatarSrc(user?.profilePictureUrl);
+  const skills = user?.academicProfile?.skills ?? [];
+  const completionScore = profileCompletion?.score ?? 0;
+
   return (
     <div
       className="hidden lg:flex bg-white rounded-xl border border-gray-100
@@ -19,8 +32,8 @@ const UserCard = ({ showProgress = false }: UserCardProps) => {
         ring-2 ring-primary flex-shrink-0"
       >
         <Image
-          src="/images/user.jpg"
-          alt={MOCK_USER.name}
+          src={avatar}
+          alt={name}
           fill
           unoptimized
           className="object-cover"
@@ -30,10 +43,10 @@ const UserCard = ({ showProgress = false }: UserCardProps) => {
       {/* Name + role */}
       <div className="text-center">
         <p className="font-primary text-base font-semibold text-content-light leading-tight">
-          {MOCK_USER.name}
+          {name}
         </p>
         <p className="font-primary text-xs text-content-light mt-0.5">
-          {MOCK_USER.role}
+          {role}
         </p>
       </div>
 
@@ -41,12 +54,12 @@ const UserCard = ({ showProgress = false }: UserCardProps) => {
       {showProgress && (
         <div className="w-full flex flex-col gap-1.5">
           <p className="font-primary text-xs font-semibold text-primary leading-snug">
-            Your profile is {MOCK_USER.profileCompletion}% complete!
+            Your profile is {completionScore}% complete!
           </p>
           <p className="font-primary text-[11px] text-content-light leading-snug">
             Add your skills to get noticed by top teams!
           </p>
-          <ProgressBar value={MOCK_USER.profileCompletion} className="mt-0.5" />
+          <ProgressBar value={completionScore} className="mt-0.5" />
         </div>
       )}
 
@@ -57,15 +70,19 @@ const UserCard = ({ showProgress = false }: UserCardProps) => {
             My Skills
           </p>
           <div className="flex flex-wrap gap-1.5">
-            {MOCK_USER.skills.map((skill) => (
-              <span
-                key={skill}
-                className="px-2.5 py-1 rounded-[0.3rem] bg-primary-light
-                  font-primary text-xs text-primary font-medium"
-              >
-                {skill}
-              </span>
-            ))}
+            {skills.length > 0 ? (
+              skills.map((skill) => (
+                <span
+                  key={skill}
+                  className="px-2.5 py-1 rounded-[0.3rem] bg-primary-light
+                    font-primary text-xs text-primary font-medium"
+                >
+                  {skill}
+                </span>
+              ))
+            ) : (
+              <p className="font-primary text-xs text-content-light">No skills added yet.</p>
+            )}
           </div>
         </div>
       )}

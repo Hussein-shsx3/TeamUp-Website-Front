@@ -1,31 +1,42 @@
 "use client";
 
-import { useState } from "react";
-import { Download, File } from "lucide-react";
-import type { MockWorkspaceFile } from "@/mock/TeamWorkspace";
-import { UploadFileModal } from "@/components/ui/modals";
+import { useEffect, useState } from "react";
+import { File, Link as LinkIcon } from "lucide-react";
+import { FileLinkModal } from "@/components/ui/modals";
 import WorkspaceCard from "./WorkspaceCard";
-import { Button, IconButton } from "@/components/ui/buttons";
+import { Button } from "@/components/ui/buttons";
+import type { WorkspaceFileItem } from "@/hooks/useTeam";
 
 interface SharedFilesCardProps {
-  files: MockWorkspaceFile[];
+  files: WorkspaceFileItem[];
   isLead: boolean;
+  isLoading?: boolean;
 }
 
-function formatSizeLabel(bytes: number): string {
-  if (bytes < 1024) return `${bytes} b`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} kb`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} mb`;
+function formatLinkLabel(linkUrl: string): string {
+  try {
+    return new URL(linkUrl).host;
+  } catch {
+    return linkUrl;
+  }
 }
 
-const SharedFilesCard = ({ files: initialFiles, isLead }: SharedFilesCardProps) => {
+const SharedFilesCard = ({ files: initialFiles, isLead, isLoading = false }: SharedFilesCardProps) => {
   const [files, setFiles] = useState(initialFiles);
-  const [uploadOpen, setUploadOpen] = useState(false);
+  const [linkOpen, setLinkOpen] = useState(false);
+
+  useEffect(() => {
+    setFiles(initialFiles);
+  }, [initialFiles]);
 
   return (
     <WorkspaceCard title="Shared Files">
       <ul className="mb-4 flex flex-col gap-3">
-        {files.map((f) => (
+        {isLoading ? (
+          <li className="py-4 font-primary text-sm text-content-light">Loading files...</li>
+        ) : files.length === 0 ? (
+          <li className="py-4 font-primary text-sm text-content-light">No shared files yet.</li>
+        ) : files.map((f) => (
           <li
             key={f.id}
             className="flex items-start gap-3 rounded-lg border border-transparent py-1 transition-colors hover:border-gray-100 hover:bg-gray-50/80"
@@ -36,18 +47,18 @@ const SharedFilesCard = ({ files: initialFiles, isLead }: SharedFilesCardProps) 
             <div className="min-w-0 flex-1">
               <p className="font-primary text-sm font-medium text-content">{f.name}</p>
               <p className="mt-0.5 font-primary text-[11px] text-content-light">
-                uploaded by {f.uploadedBy} · {f.sizeLabel}
+                linked by {f.uploadedBy} · {formatLinkLabel(f.linkUrl)}
               </p>
             </div>
-            <IconButton
-              type="button"
-              variant="ghost"
-              size="sm"
-              aria-label={`Download ${f.name}`}
-              onClick={() => console.log("download (mock)", f.id)}
+            <a
+              href={f.linkUrl}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={`Open ${f.name}`}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full text-primary transition-colors hover:bg-primary-light"
             >
-              <Download className="text-primary" />
-            </IconButton>
+              <LinkIcon className="h-4 w-4" aria-hidden="true" />
+            </a>
           </li>
         ))}
       </ul>
@@ -57,27 +68,26 @@ const SharedFilesCard = ({ files: initialFiles, isLead }: SharedFilesCardProps) 
         size="md"
         disabled={!isLead}
         className={`w-full ${!isLead ? "bg-gray-100 text-content-muted hover:bg-gray-100" : ""}`}
-        onClick={() => setUploadOpen(true)}
+        onClick={() => setLinkOpen(true)}
       >
-        Add New File
+        Add File Link
       </Button>
 
-      <UploadFileModal
-        isOpen={uploadOpen}
-        onClose={() => setUploadOpen(false)}
-        onUpload={(uploaded) => {
-          const file = uploaded[0];
-          if (!file) return;
+      <FileLinkModal
+        isOpen={linkOpen}
+        onClose={() => setLinkOpen(false)}
+        onSubmit={(value) => {
           setFiles((prev) => [
             ...prev,
             {
-              id: Date.now(),
-              name: file.name,
+              id: `${Date.now()}`,
+              name: value.name,
               uploadedBy: "you",
-              sizeLabel: formatSizeLabel(file.size),
+              linkUrl: value.url,
+              sizeLabel: formatLinkLabel(value.url),
             },
           ]);
-          console.log("upload (mock)", file.name);
+          console.log("add file link")
         }}
       />
     </WorkspaceCard>

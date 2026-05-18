@@ -1,20 +1,12 @@
 import type { Metadata } from "next";
-import { ProjectTeamManagementForm } from "@/components/sections/dashboard";
-import { MOCK_TEAM_PROJECT_SETTINGS } from "@/mock/Dashboard";
-import { MOCK_WORKSPACE_MEMBERS } from "@/mock/TeamWorkspace";
+import { ProjectTeamManagementView } from "@/components/sections/dashboard/project-settings";
 
 export const metadata: Metadata = {
   title: "TeamUp — Project Settings · Team Management",
 };
 
 const ProjectSettingsTeamPage = () => {
-  return (
-    <ProjectTeamManagementForm
-      initialCapacity={MOCK_TEAM_PROJECT_SETTINGS.capacity}
-      initialRequiredSkills={[...MOCK_TEAM_PROJECT_SETTINGS.requiredSkills]}
-      initialMembers={MOCK_WORKSPACE_MEMBERS}
-    />
-  );
+  return <ProjectTeamManagementView />;
 };
 
 export default ProjectSettingsTeamPage;

@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { FileText, Paperclip } from "lucide-react";
+import { FileText, Link as LinkIcon } from "lucide-react";
 import { Button } from "@/components/ui/buttons";
 import { variantClasses, sizeClasses } from "@/components/ui/buttons/buttonStyles";
-import { Checkbox, FileDropzone } from "@/components/ui/forms";
+import { Checkbox } from "@/components/ui/forms";
 import {
+  FileLinkModal,
   ProjectSubmissionConfirmModal,
   ProjectSubmissionSuccessModal,
 } from "@/components/ui/modals";
@@ -18,28 +19,31 @@ const ACK_LABEL_SHORT =
 const mentorDisplayName = (supervisor: string) =>
   supervisor.replace(/^Dr\.?\s*/i, "").trim() || "Name";
 
+interface SubmissionLink {
+  name: string;
+  url: string;
+}
+
 const ProjectSubmissionForm = () => {
-  const [files, setFiles] = useState<File[]>([]);
+  const [files, setFiles] = useState<SubmissionLink[]>([]);
   const [acknowledged, setAcknowledged] = useState(true);
   const [locked, setLocked] = useState(false);
   const [replacingFile, setReplacingFile] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
+  const [linkOpen, setLinkOpen] = useState(false);
 
   const hasFile = files.length > 0;
-  /** After upload: preview + Edit/Delete (until locked). */
   const showFileActions = hasFile && !locked;
-  const showDropzone = !locked && (!hasFile || replacingFile);
   const showPreview = locked || (hasFile && !replacingFile);
   const fileName = files[0]?.name ?? "";
+  const fileUrl = files[0]?.url ?? "";
 
   const canOpenConfirmModal = hasFile && acknowledged && !locked;
 
-  const handleFilesChange = (next: File[]) => {
-    setFiles(next);
-    if (next.length > 0) {
-      setReplacingFile(false);
-    }
+  const handleFileLinkSubmit = (next: SubmissionLink) => {
+    setFiles([next]);
+    setReplacingFile(false);
   };
 
   const handleDelete = () => {
@@ -70,7 +74,7 @@ const ProjectSubmissionForm = () => {
             </>
           ) : (
             <>
-              Please ensure that all required files are uploaded. Once submission is complete, the
+              Please ensure that the final project link is added. Once submission is complete, the
               project will be locked and sent to the supervisor and committee for final evaluation.
             </>
           )}
@@ -83,15 +87,27 @@ const ProjectSubmissionForm = () => {
             <p className="font-primary text-sm font-semibold text-content">Final Report</p>
             {!hasFile && !locked && !replacingFile ? (
               <p className="mt-1 font-primary text-sm text-content-light">
-                Please attach all project files in one compressed file.
+                Please add a link to the final project file or folder.
               </p>
             ) : null}
             {showPreview && fileName ? (
-              <p className="mt-1 truncate font-primary text-sm text-content-light" title={fileName}>
-                {fileName}
-              </p>
+              <div className="mt-1 space-y-1">
+                <p className="truncate font-primary text-sm text-content-light" title={fileName}>
+                  {fileName}
+                </p>
+                <a
+                  href={fileUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1 font-primary text-xs text-primary hover:underline"
+                >
+                  <LinkIcon size={13} aria-hidden="true" />
+                  Open link
+                </a>
+              </div>
             ) : null}
           </div>
+
           {showFileActions && replacingFile ? (
             <Button
               type="button"
@@ -103,9 +119,18 @@ const ProjectSubmissionForm = () => {
               Cancel edit
             </Button>
           ) : null}
+
           {showFileActions && !replacingFile ? (
             <div className="flex shrink-0 flex-wrap gap-2 sm:justify-end">
-              <Button type="button" variant="primary" size="sm" onClick={() => setReplacingFile(true)}>
+              <Button
+                type="button"
+                variant="primary"
+                size="sm"
+                onClick={() => {
+                  setReplacingFile(true);
+                  setLinkOpen(true);
+                }}
+              >
                 Edit
               </Button>
               <Button
@@ -122,15 +147,16 @@ const ProjectSubmissionForm = () => {
         </div>
 
         <div className="mt-4">
-          {showDropzone ? (
-            <FileDropzone
-              id="final-project-submission-file"
-              value={files}
-              onChange={handleFilesChange}
-              accept=".pdf,.zip,application/pdf,application/zip"
-              supportedFormatsLabel="Supported Formats : pdf, zip"
-              maxSizeLabel="Maximum size : 25 MB"
-            />
+          {!locked && !hasFile ? (
+            <Button
+              type="button"
+              variant="secondary"
+              size="md"
+              className="w-full justify-center sm:w-auto"
+              onClick={() => setLinkOpen(true)}
+            >
+              Add File Link
+            </Button>
           ) : showPreview ? (
             <div
               className="flex aspect-[4/3] max-h-52 w-full max-w-xs flex-col items-center justify-center gap-3 rounded-2xl bg-primary-light/80 p-6 sm:aspect-square sm:max-h-none"
@@ -138,7 +164,7 @@ const ProjectSubmissionForm = () => {
             >
               <div className="relative">
                 <FileText className="h-16 w-16 text-primary sm:h-20 sm:w-20" strokeWidth={1.25} />
-                <Paperclip
+                <LinkIcon
                   className="absolute -bottom-1 -right-1 h-8 w-8 text-primary sm:h-9 sm:w-9"
                   strokeWidth={1.5}
                 />
@@ -190,6 +216,21 @@ const ProjectSubmissionForm = () => {
         isOpen={successOpen}
         onClose={() => setSuccessOpen(false)}
         mentorName={mentorDisplayName(MOCK_PROJECT.supervisor)}
+      />
+
+      <FileLinkModal
+        isOpen={linkOpen}
+        onClose={() => {
+          setLinkOpen(false);
+          setReplacingFile(false);
+        }}
+        onSubmit={handleFileLinkSubmit}
+        title="Add Final Project Link"
+        submitLabel="Save Link"
+        nameLabel="Report name"
+        urlLabel="Project file link"
+        initialName={fileName}
+        initialUrl={fileUrl}
       />
     </div>
   );

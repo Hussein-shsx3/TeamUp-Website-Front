@@ -1,16 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Calendar } from "lucide-react";
 import { Button } from "@/components/ui/buttons";
 import { variantClasses, sizeClasses } from "@/components/ui/buttons/buttonStyles";
 import { MilestoneRowMenu } from "@/components/ui/team";
 import { CalendarModal, DeleteMilestoneModal } from "@/components/ui/modals";
 import { TEAM_WORKSPACE_HREF } from "@/mock/Dashboard";
+import { useWorkspaceMilestones } from "@/hooks/useTeam";
 
 export type ProjectMilestoneItem = {
-  id: number;
+  id: string;
   title: string;
   status: "completed" | "in-progress" | "scheduled";
   date: string;
@@ -22,15 +23,12 @@ function formatMilestoneSubtitle(ms: ProjectMilestoneItem) {
   return `In Progress . ${ms.date}`;
 }
 
-export interface ProjectMilestonesFormProps {
-  initialMilestones: ProjectMilestoneItem[];
-}
-
-const ProjectMilestonesForm = ({ initialMilestones }: ProjectMilestonesFormProps) => {
-  const [milestones, setMilestones] = useState<ProjectMilestoneItem[]>(initialMilestones);
-  const [checkedIds, setCheckedIds] = useState<Set<number>>(() => {
-    const s = new Set<number>();
-    initialMilestones.forEach((m) => {
+const ProjectMilestonesForm = () => {
+  const { workspaceMilestones, workspaceMilestonesQuery } = useWorkspaceMilestones();
+  const [milestones, setMilestones] = useState<ProjectMilestoneItem[]>(workspaceMilestones);
+  const [checkedIds, setCheckedIds] = useState<Set<string>>(() => {
+    const s = new Set<string>();
+    workspaceMilestones.forEach((m) => {
       if (m.status === "completed") s.add(m.id);
     });
     return s;
@@ -40,7 +38,18 @@ const ProjectMilestonesForm = ({ initialMilestones }: ProjectMilestonesFormProps
     null,
   );
 
-  const toggleChecked = (id: number) => {
+  useEffect(() => {
+    setMilestones(workspaceMilestones);
+    setCheckedIds(
+      new Set(
+        workspaceMilestones
+          .filter((milestone) => milestone.status === "completed")
+          .map((milestone) => milestone.id),
+      ),
+    );
+  }, [workspaceMilestones]);
+
+  const toggleChecked = (id: string) => {
     setCheckedIds((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
@@ -85,7 +94,9 @@ const ProjectMilestonesForm = ({ initialMilestones }: ProjectMilestonesFormProps
 
       <div className="rounded-xl border border-gray-100 bg-white p-4 sm:p-5">
         <ul className="flex flex-col gap-0">
-          {milestones.map((m) => (
+          {workspaceMilestonesQuery.isLoading ? (
+            <li className="py-4 font-primary text-sm text-content-light">Loading milestones...</li>
+          ) : milestones.map((m) => (
             <li
               key={m.id}
               className="flex items-center gap-3 border-b border-gray-100 py-3 last:border-b-0"

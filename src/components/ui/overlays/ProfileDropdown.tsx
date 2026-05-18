@@ -87,7 +87,7 @@ const ProfileDropdown = ({
             alt={displayName}
             fill
             unoptimized
-            className="object-cover"
+            className="object-cover object-[50%_20%]"
           />
         </div>
         <div className="min-w-0">
@@ -129,7 +129,7 @@ const ProfileDropdown = ({
           </button>
         ) : (
           <Link
-            href="/dashboard/activity"
+            href="/dashboard/activity/saved"
             onClick={onClose}
             className="flex items-center gap-3 px-4 py-2.5 font-primary text-sm
               text-content hover:bg-primary-light hover:text-primary

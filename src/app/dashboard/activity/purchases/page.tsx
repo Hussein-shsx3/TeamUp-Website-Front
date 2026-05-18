@@ -2,9 +2,8 @@ import { Breadcrumb } from "@/components/ui/navigation";
 import {
   ActivityShell,
   ActivityToolbar,
-  ActivityProjectCard,
 } from "@/components/sections/dashboard";
-import { MOCK_PURCHASED_ACTIVITY_ITEMS } from "@/mock/Activity";
+import ActivityPurchasesView from "@/components/sections/dashboard/activity/ActivityPurchasesView";
 
 const ActivityPurchasesPage = () => {
   return (
@@ -18,11 +17,7 @@ const ActivityPurchasesPage = () => {
       <ActivityShell>
         <div className="flex min-h-0 flex-col p-4 sm:p-6 md:p-8">
           <ActivityToolbar />
-          <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5 lg:gap-6">
-            {MOCK_PURCHASED_ACTIVITY_ITEMS.map((item) => (
-              <ActivityProjectCard key={item.id} variant="purchased" item={item} />
-            ))}
-          </div>
+          <ActivityPurchasesView />
         </div>
       </ActivityShell>
     </div>

@@ -1,5 +1,7 @@
-import { MOCK_MILESTONES } from "@/mock/Dashboard";
+"use client";
+
 import { Heading } from "@/components/ui/typography";
+import { useWorkspaceMilestones } from "@/hooks/useTeam";
 
 const STATUS_DOT: Record<string, string> = {
   completed: "bg-primary",
@@ -14,6 +16,8 @@ const STATUS_TEXT: Record<string, string> = {
 };
 
 const MilestoneRoadmap = () => {
+  const { workspaceMilestones, workspaceMilestonesQuery } = useWorkspaceMilestones();
+
   return (
     <div
       className="bg-white rounded-2xl border border-gray-100
@@ -24,9 +28,13 @@ const MilestoneRoadmap = () => {
       </Heading>
 
       <ol className="flex flex-col">
-        {MOCK_MILESTONES.map((ms, idx) => {
-          const isLast = idx === MOCK_MILESTONES.length - 1;
-          const nextMs = MOCK_MILESTONES[idx + 1];
+        {workspaceMilestonesQuery.isLoading ? (
+          <li className="py-4 font-primary text-sm text-content-light">Loading milestones...</li>
+        ) : workspaceMilestones.length === 0 ? (
+          <li className="py-4 font-primary text-sm text-content-light">No milestones found.</li>
+        ) : workspaceMilestones.map((ms, idx) => {
+          const isLast = idx === workspaceMilestones.length - 1;
+          const nextMs = workspaceMilestones[idx + 1];
 
           /* connector line is primary only when both this AND next are completed */
           const lineClass =

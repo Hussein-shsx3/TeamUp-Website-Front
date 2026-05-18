@@ -122,7 +122,7 @@ export const RecentProjectIdeasSection = () => {
                   <div className="flex items-center gap-2">
                     <div className="relative h-6 w-6 overflow-hidden rounded-full ring-2 ring-white sm:h-7 sm:w-7">
                       <Image
-                        src="/images/user.jpg"
+                        src="/images/user.png"
                         alt={idea.submittedBy}
                         fill
                         unoptimized

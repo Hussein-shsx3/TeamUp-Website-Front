@@ -35,21 +35,8 @@ export {
 export {
   resolveWorkspaceView,
   WORKSPACE_PROJECT_DESCRIPTION,
-  MOCK_WORKSPACE_MEMBERS,
-  MOCK_WORKSPACE_TASKS,
-  MOCK_WORKSPACE_FILES,
-  MOCK_WORKSPACE_MEETINGS,
-  MOCK_WORKSPACE_CHAT_MESSAGES,
-  MOCK_WORKSPACE_ONLINE_COUNT,
 } from "./TeamWorkspace";
-export type {
-  WorkspaceView,
-  MockWorkspaceMember,
-  MockWorkspaceTask,
-  MockWorkspaceFile,
-  MockWorkspaceMeeting,
-  MockWorkspaceChatMessage,
-} from "./TeamWorkspace";
+export type { WorkspaceView } from "./TeamWorkspace";
 export {
   ADMIN_USERS,
   ADMIN_USERS_PAGE_SIZE_OPTIONS,

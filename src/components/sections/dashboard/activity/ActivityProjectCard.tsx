@@ -30,7 +30,7 @@ const ActivityProjectCard = ({ variant, item }: ActivityProjectCardProps) => {
       price={price}
       priceAmount={priceAmount}
       postedBy={item.postedBy}
-      mentorAvatar="/images/user.jpg"
+      mentorAvatar="/images/user.png"
       statusLabel={statusLabel}
       detailsHref={`/dashboard/projects-ideas/${item.id}`}
     />

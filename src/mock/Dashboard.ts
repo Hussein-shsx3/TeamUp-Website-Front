@@ -6,7 +6,7 @@ export const MOCK_USER = {
   name: "Wafaa Amjad",
   role: "Graduate",
   userRole: "student" as UserRole,
-  avatar: "/images/user.jpg",
+  avatar: "/images/user.png",
   skills: ["Fundraising", "System Design", "Full-stack Dev", "Business Scaling"],
   hasTeam: true,
   profileCompletion: 80,
@@ -20,7 +20,7 @@ export const MOCK_STUDENT_PROFILE = {
   id: 42,
   name: "Wafaa Amjad",
   displayRole: "Student",
-  avatar: "/images/user.jpg",
+  avatar: "/images/user.png",
   skills: ["UI design", "Ux design", "web design", "mobile design"],
   university: "AlAzhar",
   major: "Software Engineering",
@@ -32,7 +32,7 @@ export const MOCK_MENTOR_PROFILE = {
   id: 9001,
   name: "Wafaa Amjad",
   displayRole: "Mentor",
-  avatar: "/images/user.jpg",
+  avatar: "/images/user.png",
   skills: ["Fundraising", "System Design", "Full-stack Dev", "Business Scaling"],
   university: "AlAzhar",
   major: "Senior Product Designer",
@@ -52,9 +52,9 @@ export const MOCK_PROJECT = {
   status: "In Progress" as const,
   completion: 70,
   teamMembers: [
-    { id: 1, name: "Alice", avatar: "/images/user.jpg" },
-    { id: 2, name: "Bob", avatar: "/images/user.jpg" },
-    { id: 3, name: "Carol", avatar: "/images/user.jpg" },
+    { id: 1, name: "Alice", avatar: "/images/user.png" },
+    { id: 2, name: "Bob", avatar: "/images/user.png" },
+    { id: 3, name: "Carol", avatar: "/images/user.png" },
   ],
   extraMembers: 2,
 };
@@ -106,11 +106,11 @@ export const MOCK_MENTOR_SUPERVISED_PROJECTS: MockMentorSupervisedProject[] = [
     supervisor: "Dr. Sara Ahmed",
     status: "In Progress",
     completion: 72,
-    image: "/images/Team.jpg",
+    image: "/images/Team.png",
     members: [
-      { id: 1, name: "Ali", avatar: "/images/user.jpg" },
-      { id: 2, name: "Mona", avatar: "/images/user.jpg" },
-      { id: 3, name: "Youssef", avatar: "/images/user.jpg" },
+      { id: 1, name: "Ali", avatar: "/images/user.png" },
+      { id: 2, name: "Mona", avatar: "/images/user.png" },
+      { id: 3, name: "Youssef", avatar: "/images/user.png" },
     ],
     extraMembers: 2,
     workspaceHref: "/dashboard/workspace",
@@ -121,11 +121,11 @@ export const MOCK_MENTOR_SUPERVISED_PROJECTS: MockMentorSupervisedProject[] = [
     supervisor: "Dr. Omar Nabil",
     status: "Completed",
     completion: 100,
-    image: "/images/Team.jpg",
+    image: "/images/Team.png",
     members: [
-      { id: 1, name: "Nour", avatar: "/images/user.jpg" },
-      { id: 2, name: "Tarek", avatar: "/images/user.jpg" },
-      { id: 3, name: "Laila", avatar: "/images/user.jpg" },
+      { id: 1, name: "Nour", avatar: "/images/user.png" },
+      { id: 2, name: "Tarek", avatar: "/images/user.png" },
+      { id: 3, name: "Laila", avatar: "/images/user.png" },
     ],
     extraMembers: 1,
     workspaceHref: "/dashboard/workspace",
@@ -370,7 +370,7 @@ export const CREATE_PROJECT_MAJOR_OPTIONS = [
 /** General tab — mock until API (aligned with workspace copy). */
 export const MOCK_PROJECT_SETTINGS = {
   title: "TeamUp",
-  bannerImage: "/images/Team.jpg",
+  bannerImage: "/images/Team.png",
   supervisor: "Dr Name",
   university: "AlAzhar",
   major: "Software Engineering",
@@ -447,7 +447,7 @@ export const MOCK_RECOMMENDED_PROJECTS: MockRecommendedProject[] = [
     description:
       "This graduation project explores innovative solutions in [Industry Name], focusing on solving real-world challenges through research and practical implementation.",
     tags: ["Ui design", "Ui design"],
-    image: "/images/user.jpg",
+    image: "/images/user.png",
   },
   {
     id: 2,
@@ -455,7 +455,7 @@ export const MOCK_RECOMMENDED_PROJECTS: MockRecommendedProject[] = [
     description:
       "This graduation project explores innovative solutions in [Industry Name], focusing on solving real-world challenges through research and practical implementation.",
     tags: ["Ui design", "Ui design"],
-    image: "/images/user.jpg",
+    image: "/images/user.png",
   },
   {
     id: 3,
@@ -463,7 +463,7 @@ export const MOCK_RECOMMENDED_PROJECTS: MockRecommendedProject[] = [
     description:
       "This graduation project explores innovative solutions in [Industry Name], focusing on solving real-world challenges through research and practical implementation.",
     tags: ["Ui design", "Ui design"],
-    image: "/images/user.jpg",
+    image: "/images/user.png",
   },
 ];
 

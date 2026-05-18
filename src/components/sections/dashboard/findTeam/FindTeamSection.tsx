@@ -4,10 +4,11 @@ import { Search, Filter, ChevronDown, X, ArrowUpDown } from "lucide-react";
 import { Button, LinkButton } from "@/components/ui/buttons";
 import { Heading } from "@/components/ui/typography";
 import { CreateProjectTeamModal } from "@/components/sections/dashboard/createProject";
-import { FIND_TEAM_PROJECTS, FIND_TEAM_SORT_OPTIONS } from "@/mock/FindTeam";
+import { FIND_TEAM_SORT_OPTIONS } from "@/mock/FindTeam";
 import FindTeamProjectCard from "./FindTeamProjectCard";
 import FindTeamFilterPanel, { FindTeamFilters } from "./FindTeamFilterPanel";
 import Image from "next/image";
+import { useFindTeamProjects } from "@/hooks/useFindTeam";
 
 const EMPTY_FILTERS: FindTeamFilters = {
   category: "",
@@ -40,6 +41,7 @@ const FindTeamSection = () => {
   const [sortOpen, setSortOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
+  const { projects, projectsQuery } = useFindTeamProjects();
 
   const [stagedFilters, setStagedFilters] =
     useState<FindTeamFilters>(EMPTY_FILTERS);
@@ -95,7 +97,7 @@ const FindTeamSection = () => {
   };
 
   const filteredProjects = useMemo(() => {
-    let list = [...FIND_TEAM_PROJECTS];
+    let list = [...projects];
     if (search.trim()) {
       const q = search.trim().toLowerCase();
       list = list.filter(
@@ -118,7 +120,7 @@ const FindTeamSection = () => {
     if (appliedFilters.teamStatus)
       list = list.filter((p) => p.status === appliedFilters.teamStatus);
     return list;
-  }, [search, appliedFilters]);
+  }, [search, appliedFilters, projects]);
 
   const currentSortLabel =
     FIND_TEAM_SORT_OPTIONS.find((o) => o.value === sortValue)?.label ??
@@ -312,6 +314,12 @@ const FindTeamSection = () => {
       <div
         className={`flex gap-5 items-start ${filterOpen ? "flex-col lg:flex-row" : ""}`}
       >
+        {projectsQuery.isLoading ? (
+          <div className="w-full rounded-lg border border-gray-100 bg-white p-6 font-primary text-sm text-content-light shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
+            Loading projects...
+          </div>
+        ) : null}
+
         {/* Mobile-only filter panel: show above cards when open on small screens */}
         {filterOpen && (
           <div className="w-full lg:hidden">
@@ -326,7 +334,11 @@ const FindTeamSection = () => {
 
         {/* Cards grid — 3 cols normally, 2 cols when filter is open */}
         <div className="min-w-0 flex-1">
-          {filteredProjects.length > 0 ? (
+          {projectsQuery.isLoading ? (
+            <div className="w-full rounded-lg border border-gray-100 bg-white p-6 font-primary text-sm text-content-light shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
+              Loading projects...
+            </div>
+          ) : filteredProjects.length > 0 ? (
             <div
               className={`grid grid-cols-1 gap-4 sm:gap-5
                 ${

@@ -1,38 +1,46 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/buttons";
 import { Input, TagInput } from "@/components/ui/forms";
 import { variantClasses, sizeClasses } from "@/components/ui/buttons/buttonStyles";
 import { TeamMemberRow, MemberOverflowMenu } from "@/components/ui/team";
 import { RemoveMemberModal, ReassignTeamAdminModal } from "@/components/ui/modals";
-import type { MockWorkspaceMember } from "@/mock/TeamWorkspace";
 import { TEAM_WORKSPACE_HREF } from "@/mock/Dashboard";
+import type { WorkspaceTeamMember } from "@/hooks/useTeam";
 
 export interface ProjectTeamManagementFormProps {
   initialCapacity: number;
   initialRequiredSkills: string[];
-  initialMembers: MockWorkspaceMember[];
+  initialMembers: WorkspaceTeamMember[];
+  isLoading?: boolean;
 }
 
-const sortMembersForDisplay = (members: MockWorkspaceMember[]) =>
+const sortMembersForDisplay = (members: WorkspaceTeamMember[]) =>
   [...members].sort((a, b) => {
     if (a.isTeamAdmin && !b.isTeamAdmin) return -1;
     if (!a.isTeamAdmin && b.isTeamAdmin) return 1;
-    return a.id - b.id;
+    return a.name.localeCompare(b.name);
   });
 
 const ProjectTeamManagementForm = ({
   initialCapacity,
   initialRequiredSkills,
   initialMembers,
+  isLoading = false,
 }: ProjectTeamManagementFormProps) => {
   const [capacity, setCapacity] = useState(String(initialCapacity));
   const [requiredSkills, setRequiredSkills] = useState<string[]>(initialRequiredSkills);
-  const [members] = useState(initialMembers);
-  const [memberToRemove, setMemberToRemove] = useState<MockWorkspaceMember | null>(null);
+  const [members, setMembers] = useState(initialMembers);
+  const [memberToRemove, setMemberToRemove] = useState<WorkspaceTeamMember | null>(null);
   const [reassignAdminOpen, setReassignAdminOpen] = useState(false);
+
+  useEffect(() => {
+    setCapacity(String(initialCapacity));
+    setRequiredSkills(initialRequiredSkills);
+    setMembers(initialMembers);
+  }, [initialCapacity, initialRequiredSkills, initialMembers]);
 
   const orderedMembers = useMemo(() => sortMembersForDisplay(members), [members]);
 
@@ -89,7 +97,11 @@ const ProjectTeamManagementForm = ({
       <div className="rounded-xl border border-gray-100 bg-white p-4 sm:p-5">
         <p className="mb-3 font-primary text-sm font-medium text-content-light">Team Member</p>
         <div className="flex max-h-[22rem] flex-col overflow-y-auto pr-1">
-          {orderedMembers.map((m) =>
+          {isLoading ? (
+            <p className="py-4 font-primary text-sm text-content-light">Loading team members...</p>
+          ) : orderedMembers.length === 0 ? (
+            <p className="py-4 font-primary text-sm text-content-light">No team members found.</p>
+          ) : orderedMembers.map((m) =>
             m.isTeamAdmin ? (
               <TeamMemberRow
                 key={m.id}

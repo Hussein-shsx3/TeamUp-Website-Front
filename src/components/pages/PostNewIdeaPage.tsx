@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/buttons";
 import { Heading } from "@/components/ui/typography";
 import { Breadcrumb } from "@/components/ui/navigation";
 import { Input, Select, TagInput, Textarea } from "@/components/ui/forms";
-import { UploadFileModal } from "@/components/ui/modals";
+import { FileLinkModal } from "@/components/ui/modals";
 import { MOCK_USER } from "@/mock/Dashboard";
 import { PROJECTS_IDEAS } from "@/mock/ProjectsIdeas";
 
@@ -19,7 +19,7 @@ type UploadType = "free" | "paid";
 
 interface FileItem {
   name: string;
-  size: string;
+  url: string;
   type: UploadType;
 }
 
@@ -94,13 +94,15 @@ const PostNewIdeaPage = ({
     setIsUploadModalOpen(true);
   };
 
-  const handleUpload = (uploadedFiles: File[]) => {
-    const newFiles: FileItem[] = uploadedFiles.map((file) => ({
-      name: file.name,
-      size: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
-      type: uploadType,
-    }));
-    setFiles((prev) => [...prev, ...newFiles]);
+  const handleUpload = (link: { name: string; url: string }) => {
+    setFiles((prev) => [
+      ...prev,
+      {
+        name: link.name,
+        url: link.url,
+        type: uploadType,
+      },
+    ]);
   };
 
   const removeFile = (name: string) => {
@@ -239,7 +241,7 @@ const PostNewIdeaPage = ({
             {ideaStatus === "free" ? (
               <div className="flex flex-col gap-4">
                 <p className="font-primary text-sm font-medium text-content-light">
-                  Project idea Files
+                  Project idea Links
                 </p>
                 <div className="flex flex-wrap gap-4">
                   {freeFiles.map((file) => (
@@ -255,14 +257,14 @@ const PostNewIdeaPage = ({
                   onClick={() => handleAddFileClick("free")}
                   className="flex items-center gap-2 self-start font-primary text-sm font-medium text-primary hover:text-primary-dark"
                 >
-                  <Plus size={16} /> Add File
+                  <Plus size={16} /> Add Link
                 </button>
               </div>
             ) : (
               <>
                 <div className="flex flex-col gap-4">
                   <p className="font-primary text-sm font-medium text-content-light">
-                    Project idea Free Files
+                    Project idea Free Links
                   </p>
                   <div className="flex flex-wrap gap-4">
                     {freeFiles.map((file) => (
@@ -278,12 +280,12 @@ const PostNewIdeaPage = ({
                     onClick={() => handleAddFileClick("free")}
                     className="flex items-center gap-2 self-start font-primary text-sm font-medium text-primary hover:text-primary-dark"
                   >
-                    <Plus size={16} /> Add Free File
+                    <Plus size={16} /> Add Free Link
                   </button>
                 </div>
                 <div className="flex flex-col gap-4">
                   <p className="font-primary text-sm font-medium text-content-light">
-                    Project idea Paid Files
+                    Project idea Paid Links
                   </p>
                   <div className="flex flex-wrap gap-4">
                     {paidFiles.map((file) => (
@@ -299,7 +301,7 @@ const PostNewIdeaPage = ({
                     onClick={() => handleAddFileClick("paid")}
                     className="flex items-center gap-2 self-start font-primary text-sm font-medium text-primary hover:text-primary-dark"
                   >
-                    <Plus size={16} /> Add Paid File
+                    <Plus size={16} /> Add Paid Link
                   </button>
                 </div>
               </>
@@ -328,11 +330,14 @@ const PostNewIdeaPage = ({
         </form>
       </div>
 
-      <UploadFileModal
+      <FileLinkModal
         isOpen={isUploadModalOpen}
         onClose={() => setIsUploadModalOpen(false)}
         onUpload={handleUpload}
-        title={`Upload ${uploadType === "paid" ? "Paid" : "Free"} File`}
+        title={`Add ${uploadType === "paid" ? "Paid" : "Free"} Link`}
+        submitLabel="Save Link"
+        nameLabel="File name"
+        urlLabel="File link"
       />
     </div>
   );
@@ -353,7 +358,14 @@ const FileCard = ({
       <p className="truncate font-primary text-sm font-semibold text-content">
         {file.name}
       </p>
-      <p className="font-primary text-xs text-content-light">{file.size}</p>
+      <a
+        href={file.url}
+        target="_blank"
+        rel="noreferrer"
+        className="font-primary text-xs text-primary hover:underline"
+      >
+        Open link
+      </a>
     </div>
     <button
       type="button"

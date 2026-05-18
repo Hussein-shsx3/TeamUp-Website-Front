@@ -30,6 +30,15 @@ export interface SingleUserResponse {
   user: UserProfile;
 }
 
+export interface ProfileCompletionResponse {
+  success: boolean;
+  message: string;
+  score: number;
+  completedFields: number;
+  totalFields: number;
+  missingFields: string[];
+}
+
 export interface UpdateMePayload {
   username?: string;
   firstName?: string;

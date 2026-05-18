@@ -116,7 +116,7 @@ export const ADMIN_USERS: AdminUserRecord[] = ADMIN_USER_NAMES.map((name, index)
   role: ADMIN_USER_ROLES[index % ADMIN_USER_ROLES.length],
   joinedAt: buildJoinDate(index),
   selected: ADMIN_USER_SELECTED_IDS.has(index + 1),
-  avatar: "/images/user.jpg",
+  avatar: "/images/user.png",
 }));
 
 const buildStudentDetails = (record: AdminUserRecord): AdminUserDetailRecord => ({

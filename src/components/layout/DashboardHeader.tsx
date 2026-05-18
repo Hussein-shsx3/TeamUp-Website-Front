@@ -347,7 +347,7 @@ const DashboardHeader = () => {
                     alt={displayName}
                     fill
                     unoptimized
-                    className="object-cover"
+                    className="object-cover object-[50%_20%]"
                   />
                 </div>
               </button>
@@ -535,7 +535,7 @@ const DashboardHeader = () => {
                       </button>
                     ) : (
                       <Link
-                        href="/dashboard/activity"
+                        href="/dashboard/activity/saved"
                         onClick={closeMenu}
                         className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium
                           transition-all duration-300
@@ -649,7 +649,7 @@ const DashboardHeader = () => {
                       alt={displayName}
                       fill
                       unoptimized
-                      className="object-cover"
+                      className="object-cover object-[50%_20%]"
                     />
                   </div>
                   <div className="flex flex-col">

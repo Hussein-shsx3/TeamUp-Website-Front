@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Button, LinkButton } from "@/components/ui/buttons";
 import { ProgressBar } from "@/components/ui/feedback";
 import JoinTeamModal from "@/components/sections/dashboard/findTeam/JoinTeamModal";
-import type { FindTeamProject } from "@/mock/FindTeam";
+import type { FindTeamProject } from "@/hooks/useFindTeam";
 
 interface FindTeamProjectCardProps {
   project: FindTeamProject;
@@ -113,6 +113,8 @@ const FindTeamProjectCard = ({ project }: FindTeamProjectCardProps) => {
         isOpen={joinOpen}
         onClose={() => setJoinOpen(false)}
         projectName={name}
+        projectId={id}
+        teamId={project.teamId}
       />
     </>
   );

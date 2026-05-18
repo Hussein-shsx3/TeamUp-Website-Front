@@ -3,20 +3,17 @@
 import { Breadcrumb } from "@/components/ui/navigation";
 import { EditProfileForm, SettingsShell } from "@/components/sections/dashboard";
 import { useCurrentUser } from "@/hooks/useUser";
-import { useUniversityName } from "@/hooks/useInstitution";
 import { getAvatarSrc, getDisplayRole, getFullName } from "@/lib/user";
 
 const SettingsProfilePage = () => {
   const { data: currentUser } = useCurrentUser();
   const displayUser = currentUser?.user ?? null;
   const academicProfile = displayUser?.academicProfile ?? null;
-  const universityLookup = useUniversityName(displayUser?.universityId ?? null);
   const displayRole = displayUser ? getDisplayRole(displayUser.role) : "User";
   const isMentor = displayRole === "Mentor";
   const displayName = displayUser
     ? getFullName(displayUser.firstName, displayUser.lastName) || displayUser.username
     : "Edit Profile";
-  const university = universityLookup.isLoading && displayUser?.universityId ? "Loading..." : universityLookup.universityName;
 
   return (
     <div>
@@ -35,7 +32,9 @@ const SettingsProfilePage = () => {
           <EditProfileForm
             initialName={displayName}
             initialRole={displayRole}
-            initialUniversity={university}
+            initialUniversityId={displayUser?.universityId ?? ""}
+            initialCollegeId={displayUser?.collegeId ?? ""}
+            initialDepartmentId={displayUser?.departmentId ?? ""}
             initialMajor={academicProfile?.major ?? ""}
             initialSkills={academicProfile?.skills ?? []}
             initialBio={displayUser?.bio ?? ""}

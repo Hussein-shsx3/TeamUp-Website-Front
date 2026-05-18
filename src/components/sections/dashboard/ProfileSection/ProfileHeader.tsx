@@ -61,12 +61,12 @@ const ProfileHeader = ({
           sm:h-28 sm:w-28 md:h-32 md:w-32"
       >
         <Image
-          src={avatar || "/images/user.jpg"}
+          src={avatar || "/images/user.png"}
           alt={name}
           fill
           unoptimized
           sizes="(max-width: 640px) 96px, (max-width: 768px) 112px, 128px"
-          className="object-cover"
+          className="object-cover object-[50%_20%]"
         />
       </div>
 

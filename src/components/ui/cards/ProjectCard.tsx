@@ -15,7 +15,7 @@ type ProjectCardVariant = "idea" | "saved" | "purchased";
 
 interface ProjectCardProps {
   /** Unique identifier for the project */
-  id: number;
+  id: string | number;
   /** Project title/name */
   title: string;
   /** Project description */

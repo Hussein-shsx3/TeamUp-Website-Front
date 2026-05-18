@@ -33,6 +33,8 @@ export { default as SubmitProjectReviewModal } from "./SubmitProjectReviewModal"
 export type { SubmitProjectReviewModalProps } from "./SubmitProjectReviewModal";
 export { default as UploadFileModal } from "./UploadFileModal";
 export type { UploadFileModalProps } from "./UploadFileModal";
+export { default as FileLinkModal } from "./FileLinkModal";
+export type { FileLinkModalProps, FileLinkValue } from "./FileLinkModal";
 export { default as CalendarModal } from "./CalendarModal/index";
 export { default as DeleteMilestoneModal } from "./DeleteMilestoneModal";
 export type { DeleteMilestoneModalProps } from "./DeleteMilestoneModal";

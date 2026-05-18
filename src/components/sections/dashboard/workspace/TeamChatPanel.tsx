@@ -2,17 +2,31 @@
 
 import { useState } from "react";
 import { Paperclip, Send, Smile } from "lucide-react";
-import type { MockWorkspaceChatMessage } from "@/mock/TeamWorkspace";
 import { Heading } from "@/components/ui/typography";
 import { IconButton } from "@/components/ui/buttons";
+import { useWorkspaceChat } from "@/hooks/useTeam";
 
 interface TeamChatPanelProps {
-  messages: MockWorkspaceChatMessage[];
   onlineCount: number;
+  teamId: string | null;
+  currentUserId: string | null;
 }
 
-const TeamChatPanel = ({ messages, onlineCount }: TeamChatPanelProps) => {
+const TeamChatPanel = ({ onlineCount, teamId, currentUserId }: TeamChatPanelProps) => {
   const [draft, setDraft] = useState("");
+  const {
+    teamChatsQuery,
+    chatMessagesQuery,
+    chatId,
+    workspaceChatMessages,
+    isCreatingChat,
+    isSendingMessage,
+    sendMessage,
+  } =
+    useWorkspaceChat(teamId, currentUserId);
+
+  const isLoading = teamChatsQuery.isLoading || chatMessagesQuery.isLoading || isCreatingChat;
+  const canSend = Boolean(chatId) && !isSendingMessage;
 
   return (
     <aside
@@ -34,7 +48,11 @@ const TeamChatPanel = ({ messages, onlineCount }: TeamChatPanelProps) => {
             Today
           </span>
         </div>
-        {messages.map((m) =>
+        {isLoading ? (
+          <p className="py-4 text-center font-primary text-sm text-content-light">Loading chat...</p>
+        ) : workspaceChatMessages.length === 0 ? (
+          <p className="py-4 text-center font-primary text-sm text-content-light">No messages yet.</p>
+        ) : workspaceChatMessages.map((m) =>
           m.author === "me" ? (
             <div key={m.id} className="flex justify-end">
               <div className="max-w-[85%] rounded-2xl rounded-br-md bg-primary px-3 py-2.5">
@@ -95,9 +113,11 @@ const TeamChatPanel = ({ messages, onlineCount }: TeamChatPanelProps) => {
             size="md"
             aria-label="Send message"
             className="rounded-full"
-            onClick={() => {
-              if (!draft.trim()) return;
-              console.log("send (mock)", draft);
+            disabled={!canSend}
+            onClick={async () => {
+              if (!draft.trim() || !chatId) return;
+
+              await sendMessage(draft.trim());
               setDraft("");
             }}
           >
@@ -105,7 +125,7 @@ const TeamChatPanel = ({ messages, onlineCount }: TeamChatPanelProps) => {
           </IconButton>
         </div>
         <p className="mt-2 font-primary text-[10px] text-content-muted">
-          Live sync will use Socket.IO when the server is ready.
+          Chat messages are now backed by the server and send through the API.
         </p>
       </div>
     </aside>

@@ -41,7 +41,7 @@ const WorkspaceProjectOverview = ({
           <div className="mt-2 flex items-center gap-2">
             <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full ring-2 ring-gray-100">
               <Image
-                src="/images/user.jpg"
+                src="/images/user.png"
                 alt=""
                 fill
                 unoptimized

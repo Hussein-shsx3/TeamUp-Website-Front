@@ -1,6 +1,6 @@
 import type { UserRole } from "@/types/auth";
 
-export const DEFAULT_AVATAR_SRC = "/images/user.jpg";
+export const DEFAULT_AVATAR_SRC = "/images/user.png";
 
 export const getAvatarSrc = (avatarSrc?: string | null) => {
   return avatarSrc?.trim() || DEFAULT_AVATAR_SRC;
