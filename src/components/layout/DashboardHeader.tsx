@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -34,8 +35,10 @@ import { useCurrentUser } from "@/hooks/useUser";
 import { useNotifications } from "@/hooks/useNotification";
 import { getAvatarSrc, getDisplayRole, getFullName } from "@/lib/user";
 import {
+  getDashboardNavItems,
+} from "@/lib/dashboardNavigation";
+import {
   MOCK_USER,
-  DASHBOARD_NAV_LINKS,
   MOCK_SUPERVISION_REQUESTS,
   type MockSupervisionRequest,
 } from "@/mock/Dashboard";
@@ -71,7 +74,11 @@ const DashboardHeader = () => {
   const displayRole = displayUser
     ? getDisplayRole(displayUser.role)
     : MOCK_USER.role;
-  const isMentor = displayRole === "Mentor";
+  const isMentor = displayUser?.role === "MENTOR";
+  const navItems = useMemo(
+    () => getDashboardNavItems(displayUser?.role ?? null),
+    [displayUser?.role],
+  );
   const [supervisionRequestsOpen, setSupervisionRequestsOpen] = useState(false);
   const [proposalDetailsOpen, setProposalDetailsOpen] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<MockSupervisionRequest | null>(null);
@@ -209,7 +216,7 @@ const DashboardHeader = () => {
               className="absolute h-8 bg-white/15 rounded-full
               transition-all duration-200 ease-out opacity-0 pointer-events-none top-1/2 -translate-y-1/2"
             />
-            {DASHBOARD_NAV_LINKS.map((link, i) => {
+            {navItems.map((link, i) => {
               const isActive = pathname === link.href;
               return (
                 <Link
@@ -468,7 +475,7 @@ const DashboardHeader = () => {
                     className="flex flex-col gap-0.5"
                     aria-label="Mobile dashboard navigation"
                   >
-                    {DASHBOARD_NAV_LINKS.map((link, i) => {
+                    {navItems.map((link, i) => {
                       const isActive = pathname === link.href;
                       return (
                         <Link
@@ -530,26 +537,10 @@ const DashboardHeader = () => {
                           ${isRendered ? "opacity-100 translate-x-0 delay-[255ms]" : "opacity-0 -translate-x-5"}
                           text-content hover:bg-primary-light/60 hover:text-primary`}
                       >
-                          <ClipboardList size={16} aria-hidden="true" className="ml-[2px] flex-shrink-0" />
+                        <ClipboardList size={16} aria-hidden="true" className="ml-[2px] flex-shrink-0" />
                         <span className="ml-[2px]">Supervision requests</span>
                       </button>
-                    ) : (
-                      <Link
-                        href="/dashboard/activity/saved"
-                        onClick={closeMenu}
-                        className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium
-                          transition-all duration-300
-                          ${isRendered ? "opacity-100 translate-x-0 delay-[255ms]" : "opacity-0 -translate-x-5"}
-                          text-content hover:text-primary hover:bg-primary-light/60`}
-                      >
-                        <Settings
-                          size={16}
-                          aria-hidden="true"
-                          className="flex-shrink-0 ml-[2px] opacity-0"
-                        />
-                        <span className="ml-[2px]">My Activity</span>
-                      </Link>
-                    )}
+                    ) : null}
 
                     <Link
                       href="/dashboard/settings"

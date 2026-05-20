@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { initLenis, initAnchorScrolling, destroyLenis } from "@/lib/lenis";
 import { initAOS } from "@/lib/aos";
 
@@ -9,8 +10,20 @@ interface AppProviderProps {
 }
 
 const AppProvider = ({ children }: AppProviderProps) => {
+  const pathname = usePathname();
+  const shouldUseLenis =
+    !pathname.startsWith("/dashboard") && !pathname.startsWith("/admin");
+
   useEffect(() => {
     initAOS();
+  }, []);
+
+  useEffect(() => {
+    if (!shouldUseLenis) {
+      destroyLenis();
+      return;
+    }
+
     initLenis();
     const cleanupAnchors = initAnchorScrolling();
 
@@ -18,7 +31,7 @@ const AppProvider = ({ children }: AppProviderProps) => {
       cleanupAnchors();
       destroyLenis();
     };
-  }, []);
+  }, [shouldUseLenis]);
 
   return <>{children}</>;
 };
